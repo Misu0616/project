@@ -15,6 +15,12 @@
         android:theme="@style/Theme.Project"
         tools:targetApi="31">
         <activity
+            android:name=".addProtectThing"
+            android:exported="false" />
+        <activity
+            android:name=".addProtect"
+            android:exported="false" />
+        <activity
             android:name=".admin_AddList"
             android:exported="false" />
         <activity

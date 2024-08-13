@@ -9,9 +9,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,12 +30,15 @@ public class MainActivity extends AppCompatActivity {
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference databaseReference = database.getReference();
+    FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FirebaseApp.initializeApp(this);
         setContentView(R.layout.activity_main);
+
+        firebaseAuth = firebaseAuth.getInstance();
 
         btnlogin = findViewById(R.id.btnLogin);
         btnjoin = findViewById(R.id.btnJoin);
@@ -60,13 +68,25 @@ public class MainActivity extends AppCompatActivity {
 
     // 로그인하기
     public void Login(String memId, String pwT) {
-        DatabaseReference memberRef = databaseReference.child("memberInfo").child(memId);
+       // DatabaseReference memberRef = databaseReference.child("memberInfo").child(memId);
 
-        memberRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
+       // memberRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        firebaseAuth.signInWithEmailAndPassword(memId, pwT)
+                .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {// 성공했을 때
+                            Intent intent = new Intent(MainActivity.this, MyTreeActivity.class);
+                            startActivity(intent);
+                        } else {//실패했을때
+                            Toast.makeText(MainActivity.this, "로그인 오류", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                   /* @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    // path를 파이어베이스에 있는 이름과 똑같이 맞추기 
+                    // path를 파이어베이스에 있는 이름과 똑같이 맞추기
                     String storedPassword = dataSnapshot.child("memPassword").getValue(String.class);
                     Log.d("pw", "pwd : " + storedPassword);
                     // storedPassword가 null인지 체크
@@ -89,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
                 // 오류 처리
                 Toast.makeText(MainActivity.this, "오류 발생: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
+            }*/
         });
     }
 
