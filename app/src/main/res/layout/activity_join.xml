@@ -51,14 +51,28 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/textView12"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="비밀번호"
-        android:layout_marginLeft="70dp"
-        android:layout_marginTop="20dp"
-        android:textAppearance="@style/email" />
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp">
+
+        <TextView
+            android:id="@+id/textView12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="70dp"
+            android:text="비밀번호"
+            android:textAppearance="@style/email" />
+
+        <ImageButton
+            android:id="@+id/PasswordVisibility1"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="10dp"
+            android:background="?attr/selectableItemBackground"
+            android:src="@drawable/visibility_off" />
+    </LinearLayout>
 
     <EditText
         android:id="@+id/memPW"
@@ -66,17 +80,32 @@
         android:layout_height="41dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
-        android:background="@drawable/loginbox"/>
+        android:inputType="textPassword"
+        android:background="@drawable/loginbox" />
 
-    <TextView
-        android:id="@+id/textView14"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="비밀번호 확인"
-        android:layout_marginLeft="70dp"
-        android:layout_marginTop="20dp"
-        android:gravity="top"
-        android:textAppearance="@style/email" />
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp" >
+
+        <TextView
+            android:id="@+id/textView14"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="70dp"
+            android:gravity="top"
+            android:text="비밀번호 확인"
+            android:textAppearance="@style/email" />
+
+        <ImageButton
+            android:id="@+id/PasswordVisibility2"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="10dp"
+            android:background="?attr/selectableItemBackground"
+            android:src="@drawable/visibility_off"/>
+    </LinearLayout>
 
     <EditText
         android:id="@+id/checkMemPW"
@@ -84,6 +113,7 @@
         android:layout_height="41dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
+        android:inputType="textPassword"
         android:background="@drawable/loginbox" />
 
     <LinearLayout

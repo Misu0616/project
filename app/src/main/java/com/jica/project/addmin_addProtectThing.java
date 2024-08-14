@@ -4,14 +4,18 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-public class addProtectThing extends AppCompatActivity {
+public class addmin_addProtectThing extends AppCompatActivity {
 
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference databaseReference = database.getReference();
@@ -39,7 +43,20 @@ public class addProtectThing extends AppCompatActivity {
     public void addActivities(String addActivity){
         addActivity addActivityJava = new addActivity(addActivity);
 
-        String actNumber = addActivity;
-        databaseReference.child("activityInfo").child(actNumber).setValue(addActivityJava);
+        databaseReference.child("activityInfo").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                int actNumber = (int) dataSnapshot.getChildrenCount(); // 현재 저장된 활동 수를 가져옴
+
+                // 새로운 활동 정보를 저장
+                databaseReference.child("activityInfo").child(String.valueOf(actNumber)).setValue(addActivityJava);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // 오류 처리
+                Log.e("DatabaseError", databaseError.getMessage());
+            }
+        });
     }
 }

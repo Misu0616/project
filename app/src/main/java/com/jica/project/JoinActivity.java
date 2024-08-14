@@ -5,9 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -32,6 +34,8 @@ public class JoinActivity extends AppCompatActivity {
 
     Button btnJoin, btnFinalJoin, btnCheckMail;
     EditText memIdT, memPasswordT, checkMemPWT, memEmailT;
+    ImageButton PasswordVisibility1, PasswordVisibility2;
+    private boolean isPasswordVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,15 +51,40 @@ public class JoinActivity extends AppCompatActivity {
         memPasswordT = findViewById(R.id.memPW);
         checkMemPWT = findViewById(R.id.checkMemPW);
         memEmailT = findViewById(R.id.memEmail);
+        PasswordVisibility1 = findViewById(R.id.PasswordVisibility1);
+        PasswordVisibility2 = findViewById(R.id.PasswordVisibility2);
 
         // 아이디 중복 확인 버튼
         btnJoin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String memId = memIdT.getText().toString();
-                checkId(memId);
+                DatabaseReference memberRef = databaseReference.child("memberInfo").child(memId);
+
+                memberRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            // 아이디가 이미 존재하는 경우
+                            Toast.makeText(JoinActivity.this, "이미 사용 중인 아이디입니다.", Toast.LENGTH_SHORT).show();
+                            // 애매한데 자꾸 넘어가니 확인 필요...
+                            //Intent intent = new Intent(getApplicationContext(), JoinActivity.class);
+                            //startActivity(intent);
+                        } else {
+                            // 아이디가 존재하지 않는 경우
+                            Toast.makeText(JoinActivity.this, "사용 가능한 아이디입니다.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        // 데이터베이스 오류 처리
+                        Toast.makeText(JoinActivity.this, "오류 발생: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
+
         // 이메일 중복 확인 버튼
         btnCheckMail.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,11 +97,40 @@ public class JoinActivity extends AppCompatActivity {
 
                     if (email.equals(firebaseEmail)) {
                         Toast.makeText(JoinActivity.this, "중복된 이메일입니다", Toast.LENGTH_SHORT).show();
-                        return;
                     } else {
                         Toast.makeText(JoinActivity.this, "사용 가능한 이메일입니다", Toast.LENGTH_SHORT).show();
                     }
                 }
+            }
+        });
+
+        // 비밀번호 글자 보이기
+        PasswordVisibility1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!isPasswordVisible) {
+                    memPasswordT.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                    PasswordVisibility1.setImageResource(R.drawable.visibility_off);
+                } else {
+                    memPasswordT.setInputType(InputType.TYPE_CLASS_TEXT);
+                    PasswordVisibility1.setImageResource(R.drawable.visibility);
+                }
+                isPasswordVisible = !isPasswordVisible;
+                memPasswordT.setSelection(memPasswordT.length());
+            }
+        });
+        PasswordVisibility2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!isPasswordVisible) {
+                    checkMemPWT.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                    PasswordVisibility1.setImageResource(R.drawable.visibility_off);
+                } else {
+                    checkMemPWT.setInputType(InputType.TYPE_CLASS_TEXT);
+                    PasswordVisibility2.setImageResource(R.drawable.visibility);
+                }
+                isPasswordVisible = !isPasswordVisible;
+                checkMemPWT.setSelection(checkMemPWT.length());
             }
         });
 
@@ -93,8 +151,11 @@ public class JoinActivity extends AppCompatActivity {
                 } else if (pwd.isEmpty()) {
                     Toast.makeText(JoinActivity.this, "비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show();
                     return;
-                } else if (id.length() < 6 || pwd.length() < 6) {
-                    Toast.makeText(JoinActivity.this, "아이디와 비밀번호는 6글자 이상 입력해주세요", Toast.LENGTH_SHORT).show();
+                } else if (id.length() < 4) {
+                    Toast.makeText(JoinActivity.this, "아이디는 최소 4자 이상 입력해주세요.", Toast.LENGTH_SHORT).show();
+                    return;
+                }else if (!isPasswordValid(pwd)) {
+                    Toast.makeText(JoinActivity.this, "최소 8자 이상, 영문자, 숫자, 특수문자를 각각 1개 이상 포함해야 합니다.", Toast.LENGTH_SHORT).show();
                     return;
                 } else if (!pwd.equals(pwdchk)) {
                     Toast.makeText(JoinActivity.this, "비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show();
@@ -103,8 +164,6 @@ public class JoinActivity extends AppCompatActivity {
                     Toast.makeText(JoinActivity.this, "이메일 형식에 맞게 입력해주세요", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
-                checkId(id);
 
         // 모든 검증을 통과한 후 사용자 등록 시도
         firebaseAuth.createUserWithEmailAndPassword(email, pwd)
@@ -137,38 +196,26 @@ public class JoinActivity extends AppCompatActivity {
 
     }
 
-    // 아이디 중복 확인 메서드
-    private void checkId(String memId) {
-        DatabaseReference memberRef = databaseReference.child("memberInfo").child(memId);
-
-        memberRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    // 아이디가 이미 존재하는 경우
-                    Toast.makeText(JoinActivity.this, "이미 사용 중인 아이디입니다.", Toast.LENGTH_SHORT).show();
-                    // 애매한데 자꾸 넘어가니 확인 필요...
-                    Intent intent = new Intent(getApplicationContext(), JoinActivity.class);
-                    startActivity(intent);
-                } else {
-                    // 아이디가 존재하지 않는 경우
-                    Toast.makeText(JoinActivity.this, "사용 가능한 아이디입니다.", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // 데이터베이스 오류 처리
-                Toast.makeText(JoinActivity.this, "오류 발생: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
     // 이메일 유효성 검사
     public boolean isValidEmail(String email) {
         String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
         Pattern pattern = Pattern.compile(emailRegex);
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
+    }
+
+    // 비밀번호 유효성 검사
+    private boolean isPasswordValid(String password) {
+        Pattern pattern = Pattern.compile("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@#$%^&+=!]).{8,}$");
+        boolean isValid = pattern.matcher(password).matches();
+
+       /* if (!isValid) {
+            passwordError.setText("최소 8자 이상, 영문자, 숫자, 특수문자를 각각 1개 이상 포함해야 합니다.");
+            passwordError.setVisibility(View.VISIBLE);
+        } else {
+            passwordError.setVisibility(View.GONE);
+            isPasswordValid = true;
+        }*/
+        return isValid;
     }
 }

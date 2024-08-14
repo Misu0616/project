@@ -22,6 +22,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.perf.session.SessionManager;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference databaseReference = database.getReference();
     FirebaseAuth firebaseAuth;
+    private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,23 +41,33 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         firebaseAuth = firebaseAuth.getInstance();
+        databaseReference = FirebaseDatabase.getInstance().getReference("memberInfo/memId");
 
         btnlogin = findViewById(R.id.btnLogin);
         btnjoin = findViewById(R.id.btnJoin);
         emailT = findViewById(R.id.email);
         pwT = findViewById(R.id.password);
 
+        // 자동 로그인
+        if (firebaseAuth.getCurrentUser() != null) {
+            Toast.makeText(MainActivity.this, "자동 로그인되었습니다", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(MainActivity.this, MyTreeActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
+        // 로그인 버튼
         btnlogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String email = emailT.getText().toString();
                 String memId = pwT.getText().toString();
 
-                Log.d("login", "email : " + email + " pw : " + memId);
                 Login(email, memId);
             }
         });
 
+        // 회원가입 버튼
         btnjoin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -67,50 +79,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // 로그인하기
-    public void Login(String memId, String pwT) {
-       // DatabaseReference memberRef = databaseReference.child("memberInfo").child(memId);
+    public void Login(String emailT, String pwT) {
 
-       // memberRef.addListenerForSingleValueEvent(new ValueEventListener() {
-        firebaseAuth.signInWithEmailAndPassword(memId, pwT)
+        firebaseAuth.signInWithEmailAndPassword(emailT, pwT)
                 .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {// 성공했을 때
+                        if (task.isSuccessful()) { // 성공
                             Intent intent = new Intent(MainActivity.this, MyTreeActivity.class);
                             startActivity(intent);
-                        } else {//실패했을때
-                            Toast.makeText(MainActivity.this, "로그인 오류", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "로그인되었습니다", Toast.LENGTH_SHORT).show();
+                        } else { // 실패
+                            Toast.makeText(MainActivity.this, "입력하신 정보를 다시 확인해주세요", Toast.LENGTH_SHORT).show();
                         }
                     }
-
-                   /* @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    // path를 파이어베이스에 있는 이름과 똑같이 맞추기
-                    String storedPassword = dataSnapshot.child("memPassword").getValue(String.class);
-                    Log.d("pw", "pwd : " + storedPassword);
-                    // storedPassword가 null인지 체크
-                    if (storedPassword != null && storedPassword.equals(pwT)) {
-                        // 로그인 성공
-                        Toast.makeText(MainActivity.this, "로그인 성공", Toast.LENGTH_SHORT).show();
-                        Intent home = new Intent(getApplicationContext(), MyTreeActivity.class);
-                        startActivity(home);
-                    } else {
-                        // 비밀번호 불일치
-                        Toast.makeText(MainActivity.this, "비밀번호가 올바르지 않습니다.", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    // 사용자 없음
-                    Toast.makeText(MainActivity.this, "해당 이메일로 등록된 사용자가 없습니다.", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // 오류 처리
-                Toast.makeText(MainActivity.this, "오류 발생: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }*/
-        });
+                });
     }
 
 }

@@ -47,6 +47,7 @@
         android:layout_height="41dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="15dp"
+        android:inputType="textPassword"
         android:background="@drawable/loginbox" />
 
     <android.widget.Button
