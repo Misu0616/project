@@ -1,17 +1,29 @@
 package com.jica.project;
 
 public class ActivityModel {
-    private String activityName;
+    private String actNumber;
 
     public ActivityModel() {
-        // Default constructor required for calls to DataSnapshot.getValue(ActivityModel.class)
+        // 기본 생성자 필요
     }
 
-    public ActivityModel(String activityName) {
-        this.activityName = activityName;
+    public ActivityModel(String actNumber) {
+        this.actNumber = actNumber;
     }
 
-    public String getActivityName() {
-        return activityName;
+    public String getActNumber() {
+        return actNumber;
+    }
+
+    public void setActNumber(String actNumber) {
+        this.actNumber = actNumber;
+    }
+
+    @Override
+    public String toString() {
+        return "ActivityModel{" +
+                "actNumber='" + actNumber + '\'' +
+                '}';
     }
 }
+

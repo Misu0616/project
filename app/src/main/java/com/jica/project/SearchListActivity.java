@@ -1,21 +1,16 @@
 package com.jica.project;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -37,22 +32,6 @@ public class SearchListActivity extends AppCompatActivity {
 
     ImageButton search;
 
-    String todoList[] = {
-            "양치컵 사용하기",
-            "장바구니 사용하기",
-            "대중교통 이용하기",
-            "걷기",
-            "분리수거 하기",
-            "다회용 용기 사용하기",
-            "채식하기",
-            "에어컨 적정 온도 유지하기",
-            "텀블러 사용하기",
-            "쓰레기 줍기",
-            "계단 이용하기"
-    };
-
-    ArrayAdapter adapter;
-    ListView showTodoList;
     public SearchListActivity() {
         super();
     }
@@ -67,6 +46,10 @@ public class SearchListActivity extends AppCompatActivity {
         // 하단 네비게이션 바
         Fragment underBar1 = new underBar();
         getSupportFragmentManager().beginTransaction().replace(R.id.underbarSearch, underBar1).commit();
+
+        // recycleview fragment
+        Fragment recycle = new recycleFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.showList, recycle).commit();
 
         // 검색창 돋보기 클릭 
         search = findViewById(R.id.search);
@@ -93,30 +76,20 @@ public class SearchListActivity extends AppCompatActivity {
                 activityList.clear(); // 기존 데이터를 지우고 새로 추가
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     ActivityModel activity = snapshot.getValue(ActivityModel.class);
-                    activityList.add(activity);
+                    if (activity != null) {
+                        activityList.add(activity);
+                    } else {
+                        Log.e("noAnswer", "activity is null");
+                    }
                 }
+                Log.e("noAnswer", activityList.toString());
                 activityAdapter.notifyDataSetChanged(); // 데이터 변경 알리기
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                // 오류 처리
+                Log.e("FirebaseError", databaseError.getMessage());
             }
         });
-
-        /*showTodoList = findViewById(R.id.showList);
-
-        adapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, todoList){
-            @NonNull
-            @Override
-            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-                View view = super.getView(position, convertView, parent);
-                TextView tv = (TextView)view.findViewById(android.R.id.text1);
-                tv.setBackgroundColor(Color.argb(128, 241, 241, 241));
-                return view;
-            }
-        };
-
-        showTodoList.setAdapter(adapter);*/
     }
 }

@@ -1,5 +1,6 @@
 package com.jica.project;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,14 +19,20 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_gallery_info, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_recycle, parent, false);
+        Log.d("ActivityAdapter", "View created: " + view);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ActivityModel activity = activityList.get(position);
-        holder.activityTextView.setText(activity.getActivityName());
+        // holder.activityTextView.setText(activity.getActNumber());
+        if (holder.activityTextView != null) {
+            holder.activityTextView.setText(activity.getActNumber());
+        } else {
+            Log.e("ActivityAdapter", "activityTextView is null");
+        }
     }
 
     @Override
@@ -38,7 +45,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            activityTextView = itemView.findViewById(R.id.textView2);
+            activityTextView = itemView.findViewById(R.id.activityTextView);
         }
     }
 }
