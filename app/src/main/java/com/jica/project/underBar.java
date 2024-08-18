@@ -31,7 +31,7 @@ public class underBar extends Fragment {
             @Override
             public void onClick(View view) {
                 Toast.makeText(getContext(), "camera 페이지 성공", Toast.LENGTH_SHORT).show();
-                Intent camera = new Intent(getActivity(), addmin_addProtectThing.class);
+                Intent camera = new Intent(getActivity(), SearchListActivity.class);
                 camera.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(camera);
             }

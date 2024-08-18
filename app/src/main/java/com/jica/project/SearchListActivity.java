@@ -6,11 +6,13 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Person;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -48,8 +50,8 @@ public class SearchListActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.underbarSearch, underBar1).commit();
 
         // recycleview fragment
-        Fragment recycle = new recycleFragment();
-        getSupportFragmentManager().beginTransaction().replace(R.id.showList, recycle).commit();
+       // Fragment recycle = new recycleFragment();
+        // getSupportFragmentManager().beginTransaction().replace(R.id.showList, recycle).commit();
 
         // 검색창 돋보기 클릭 
         search = findViewById(R.id.search);
@@ -91,5 +93,6 @@ public class SearchListActivity extends AppCompatActivity {
                 Log.e("FirebaseError", databaseError.getMessage());
             }
         });
+
     }
 }

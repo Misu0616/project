@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/textView2"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="20sp"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="10dp"
+    android:text="즐거운 출력222"
+    android:textSize="24sp"
+    android:clickable="true"
+    android:onClick="btnActivity"
+    >
+
+    <!-- <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycleview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />-->
+</TextView>
