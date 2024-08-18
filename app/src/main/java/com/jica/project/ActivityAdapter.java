@@ -34,7 +34,6 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ActivityModel activity = activityList.get(position);
-        // holder.activityTextView.setText(activity.getActNumber());
         if (holder.activityTextView != null) {
             holder.activityTextView.setText(activity.getActNumber());
         } else {
@@ -48,6 +47,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
+        public static final String POSITION_KEY = "position_key";
         TextView activityTextView;
 
         public ViewHolder(@NonNull View itemView) {
@@ -57,12 +57,12 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
             activityTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    // position 순서 뜬다ㅏㅏ
+                    int position = getPosition();
                     Toast.makeText(itemView.getContext(),  "포지션이 뜨려나? " + getPosition(), Toast.LENGTH_SHORT).show();
-                    
+
                     AlertDialog.Builder builder = new AlertDialog.Builder(itemView.getContext());
                     builder.setTitle("활동 인증") // 팝업창 제목
-                            .setMessage("인증하시갰습니까?") // 팝업창 메시지
+                            .setMessage("인증하시겠습니까?") // 팝업창 메시지
                             .setPositiveButton("취소", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -74,6 +74,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
                                     Intent camera = new Intent(itemView.getContext(), CameraActivity.class);
+                                    camera.putExtra(ActivityAdapter.ViewHolder.POSITION_KEY, position);
                                     itemView.getContext().startActivity(camera);
                                 }
                             });

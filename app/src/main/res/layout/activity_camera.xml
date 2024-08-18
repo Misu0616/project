@@ -12,13 +12,26 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:src="@drawable/recyclebag" />
+        android:src="@drawable/logo" />
 
-    <Button
-        android:id="@+id/savePicture"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="10"
-        android:text="사진 촬영하기" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/takeAPicture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="사진 촬영하기" />
+
+        <Button
+            android:id="@+id/savePicture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="사진 저장하기" />
+    </LinearLayout>
 
 </LinearLayout>

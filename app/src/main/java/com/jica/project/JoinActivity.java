@@ -67,9 +67,6 @@ public class JoinActivity extends AppCompatActivity {
                         if (dataSnapshot.exists()) {
                             // 아이디가 이미 존재하는 경우
                             Toast.makeText(JoinActivity.this, "이미 사용 중인 아이디입니다.", Toast.LENGTH_SHORT).show();
-                            // 애매한데 자꾸 넘어가니 확인 필요...
-                            //Intent intent = new Intent(getApplicationContext(), JoinActivity.class);
-                            //startActivity(intent);
                         } else {
                             // 아이디가 존재하지 않는 경우
                             Toast.makeText(JoinActivity.this, "사용 가능한 아이디입니다.", Toast.LENGTH_SHORT).show();
