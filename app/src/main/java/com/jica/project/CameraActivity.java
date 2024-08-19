@@ -60,13 +60,6 @@ public class CameraActivity extends AppCompatActivity {
             }
         });
 
-        // 사진 저장 버튼
-       /* savePics.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dispatchTakePictureIntent();
-            }
-        });*/
     }
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
