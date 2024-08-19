@@ -19,14 +19,15 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.jica.project.ActivityAdapter.ViewHolder;
 
 public class CameraActivity extends AppCompatActivity {
@@ -47,7 +48,6 @@ public class CameraActivity extends AppCompatActivity {
 
         imageView = findViewById(R.id.tookPicture);
         takePics = findViewById(R.id.takeAPicture);
-        savePics = findViewById(R.id.savePicture);
 
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
@@ -105,27 +105,26 @@ public class CameraActivity extends AppCompatActivity {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         String fileName = "photo_" + timeStamp + ".jpg"; // 예: photo_20230818_123456.jpg
 
-        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-        String userId = currentUser.getUid();
        // Toast.makeText(CameraActivity.this, "userID~~ : " + userId, Toast.LENGTH_SHORT).show();
 
         // UID로 user 구분하기
-        // FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
         if (currentUser != null) {
-            // String userId = currentUser.getUid(); // UID 가져오기
+            String userId = currentUser.getUid(); // UID 가져오기
 
+            // Firebase Storage에 업로드
+            StorageReference imagesRef = storageRef.child(userId + "/" + position + "/" + fileName); // 경로 설정
+            imagesRef.putBytes(data)
+                    .addOnSuccessListener(taskSnapshot -> {
+                        Toast.makeText(CameraActivity.this, "업로드 성공", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getApplicationContext(), MyGalleryActivity.class);
+                        startActivity(intent);
+                    })
+                    .addOnFailureListener(exception -> {
+                        Toast.makeText(CameraActivity.this, "업로드 실패", Toast.LENGTH_SHORT).show();
+                    });
         }
-        // Firebase Storage에 업로드
-        StorageReference imagesRef = storageRef.child("hi/" + position + "/" + fileName); // 경로 설정
-        imagesRef.putBytes(data)
-                .addOnSuccessListener(taskSnapshot -> {
-                    Toast.makeText(CameraActivity.this, "업로드 성공", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(getApplicationContext(), MyGalleryActivity.class);
-                    startActivity(intent);
-                })
-                .addOnFailureListener(exception -> {
-                    Toast.makeText(CameraActivity.this, "업로드 실패", Toast.LENGTH_SHORT).show();
-                });
 
     }
 
