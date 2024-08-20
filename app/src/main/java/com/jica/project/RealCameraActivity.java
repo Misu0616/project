@@ -220,7 +220,7 @@ public class RealCameraActivity extends AppCompatActivity {
             String userId = currentUser.getUid(); // UID 가져오기
 
             // Firebase 에 업로드
-            saveDoneLists(String.valueOf(position), timeStamp, false);
+            saveDoneLists(String.valueOf(position), timeStamp, "false");
 
             // Firebase Storage에 업로드
             StorageReference imagesRef = storageRef.child(userId + "/" + position + "/" + fileName); // 경로 설정
@@ -236,11 +236,9 @@ public class RealCameraActivity extends AppCompatActivity {
         }
     }
 
-    public void saveDoneLists(String title, String date, Boolean admin_check) {
+    public void saveDoneLists(String title, String date, String admin_check) {
         // Firebase에 인증 내역 저장하기
         showDoneList showDoneList = new showDoneList(title, date, admin_check);
-
-        String memId = firebaseAuth.getUid();
 
         SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         String userEmail = sharedPreferences.getString("USER_EMAIL", null);

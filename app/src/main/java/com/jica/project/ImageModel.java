@@ -5,6 +5,9 @@ public class ImageModel {
     private String date;
     private boolean admin_check;
 
+    public ImageModel() {
+    }
+
     public ImageModel(String title, String date, boolean admin_check) {
         this.title = title;
         this.date = date;

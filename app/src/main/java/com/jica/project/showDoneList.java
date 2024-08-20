@@ -3,9 +3,9 @@ package com.jica.project;
 public class showDoneList {
     String title;
     String date;
-    boolean admin_check;
+    String admin_check;
 
-    public showDoneList(String title, String date, boolean admin_check) {
+    public showDoneList(String title, String date, String admin_check) {
         this.title = title;
         this.date = date;
         this.admin_check = admin_check;
@@ -27,11 +27,11 @@ public class showDoneList {
         this.date = date;
     }
 
-    public boolean isAdmin_check() {
+    public String getAdmin_check() {
         return admin_check;
     }
 
-    public void setAdmin_check(boolean admin_check) {
+    public void setAdmin_check(String admin_check) {
         this.admin_check = admin_check;
     }
 
