@@ -27,18 +27,17 @@
         android:padding="7sp"
         android:text="최신순" />
 
-    <FrameLayout
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/doneList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <GridView
-            android:id="@+id/gallerys"
-            android:layout_width="match_parent"
-            android:layout_height="450sp"
-            android:numColumns="2"
-            android:verticalSpacing="30dp" />
+    </androidx.recyclerview.widget.RecyclerView>
 
-    </FrameLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/doneImage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <FrameLayout
         android:id="@+id/galleryUnderbar"

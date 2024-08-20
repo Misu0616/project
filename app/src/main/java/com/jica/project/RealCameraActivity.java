@@ -17,9 +17,12 @@ import androidx.core.content.FileProvider;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
@@ -35,6 +38,11 @@ import android.widget.Toast;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 /*import com.yanzhenjie.permission.Action;
@@ -42,6 +50,7 @@ import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.runtime.Permission;*/
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -55,6 +64,7 @@ public class RealCameraActivity extends AppCompatActivity {
     private FirebaseStorage storage;
     private StorageReference storageRef;
     FirebaseAuth firebaseAuth;
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
     File file;
 
     private ImageCapture imageCapture;
@@ -64,13 +74,17 @@ public class RealCameraActivity extends AppCompatActivity {
 
     private final ActivityResultLauncher<Intent> cameraResultLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                Log.d("noAnswer", "1. ActivityResultLauncher");
                 if (result.getResultCode() == RESULT_OK) {
                     if (file != null && file.exists()) {
                         Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
                         if (bitmap != null) {
-                            imageView.setImageBitmap(bitmap);
+                            // ExifInterface를 사용하여 이미지 회전
+                            int orientation = getExifOrientation(file.getAbsolutePath());
+                            Bitmap rotatedBitmap = rotateBitmap(bitmap, orientation);
+                            imageView.setImageBitmap(rotatedBitmap);
                             imageView.setVisibility(View.VISIBLE);
-                            uploadImageToFirebase(bitmap);
+                            uploadImageToFirebase(rotatedBitmap);
                         } else {
                             Log.e("ImageError", "Bitmap is null");
                         }
@@ -82,9 +96,9 @@ public class RealCameraActivity extends AppCompatActivity {
                 }
             });
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("noAnswer", "2. onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_real_camera);
 
@@ -92,7 +106,6 @@ public class RealCameraActivity extends AppCompatActivity {
         storageRef = storage.getReference();
         firebaseAuth = FirebaseAuth.getInstance();
 
-        PreviewView previewView = findViewById(R.id.previewView);
         imageView = findViewById(R.id.imageView);
         Button btnCamera = findViewById(R.id.btnCamera);
 
@@ -102,7 +115,7 @@ public class RealCameraActivity extends AppCompatActivity {
         int permissionCheck = ContextCompat.checkSelfPermission(this, "android.permission.CAMERA");
         if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "카메라 권한 수락됨", Toast.LENGTH_LONG).show();
-            startCamera(previewView);
+            startCamera();
         } else {
             Toast.makeText(this, "카메라 권한을 허용해주세요", Toast.LENGTH_LONG).show();
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, "android.permission.CAMERA")) {
@@ -117,18 +130,18 @@ public class RealCameraActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (isCameraInitialized) {
+                    Log.d("noAnswer", "3. onClick");
                     takePicture();
                 } else {
                     Toast.makeText(getApplicationContext(), "카메라 권한을 허용해주세요.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
-
     }
 
-    private void startCamera(PreviewView previewView) {
+    private void startCamera() {
         if (isCameraInitialized) return; // 이미 초기화되면 실행 x
-        previewView.setVisibility(View.VISIBLE);
+        Log.d("noAnswer", "4. startCamera");
 
         // CameraProvider 인스턴스를 가져옴
         ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider.getInstance(this);
@@ -150,9 +163,6 @@ public class RealCameraActivity extends AppCompatActivity {
                 cameraProvider.unbindAll(); // 이전 바인딩 해제
                 cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture);
 
-                // PreviewView에 SurfaceProvider 설정
-                preview.setSurfaceProvider(previewView.getSurfaceProvider());
-
                 isCameraInitialized = true;
 
             } catch (ExecutionException | InterruptedException e) {
@@ -162,6 +172,7 @@ public class RealCameraActivity extends AppCompatActivity {
     }
 
     private void takePicture() {
+        Log.d("noAnswer", "5. takePicture");
         file = createFile();
         Uri uri;
 
@@ -179,27 +190,14 @@ public class RealCameraActivity extends AppCompatActivity {
     }
 
     private File createFile(){
-
+        Log.d("noAnswer", "6. createFile");
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         String fileName = "photo_" + timeStamp + ".jpg";
         return new File(getExternalFilesDir(null), fileName);
     }
 
-    /*@Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(requestCode == 101 && resultCode == RESULT_OK){
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize = 8;
-            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
-
-            imageView.setImageBitmap(bitmap);
-            uploadImageToFirebase(bitmap);
-        }
-    }*/
-
     private void uploadImageToFirebase(Bitmap bitmap) {
+        Log.d("noAnswer", "7. uploadImageToFirebase");
         // Bitmap을 바이트 배열로 변환
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
@@ -221,6 +219,9 @@ public class RealCameraActivity extends AppCompatActivity {
         if (currentUser != null) {
             String userId = currentUser.getUid(); // UID 가져오기
 
+            // Firebase 에 업로드
+            saveDoneLists(String.valueOf(position), timeStamp, false);
+
             // Firebase Storage에 업로드
             StorageReference imagesRef = storageRef.child(userId + "/" + position + "/" + fileName); // 경로 설정
             imagesRef.putBytes(data)
@@ -233,7 +234,92 @@ public class RealCameraActivity extends AppCompatActivity {
                         Toast.makeText(RealCameraActivity.this, "업로드 실패", Toast.LENGTH_SHORT).show();
                     });
         }
+    }
 
+    public void saveDoneLists(String title, String date, Boolean admin_check) {
+        // Firebase에 인증 내역 저장하기
+        showDoneList showDoneList = new showDoneList(title, date, admin_check);
+
+        String memId = firebaseAuth.getUid();
+
+        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        String userEmail = sharedPreferences.getString("USER_EMAIL", null);
+        String safeEmail = userEmail.replace(".", ",");
+
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("memberInfo").child(safeEmail).child("imageInfo").child(date);
+
+        if (userEmail != null) {
+            Log.d("UserEmail", "받은 이메일: " + userEmail);
+        } else {
+            Log.d("UserEmail", "이메일 값이 없습니다.");
+        }
+
+        if (firebaseAuth.getCurrentUser() != null) {
+            databaseReference.setValue(showDoneList)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Log.d("Firebase", "데이터가 성공적으로 추가되었습니다.");
+                        } else {
+                            Log.e("Firebase", "데이터 추가 실패: " + task.getException().getMessage());
+                        }
+                    });
+        } else {
+            Log.d("Firebase", "사용자가 로그인하지 않았습니다.");
+        }
+    }
+    private int getExifOrientation(String path) {
+        int orientation = ExifInterface.ORIENTATION_UNDEFINED;
+        try {
+            ExifInterface exif = new ExifInterface(path);
+            orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return orientation;
+    }
+
+    public static Bitmap rotateBitmap(Bitmap bitmap, int orientation) {
+
+        Matrix matrix = new Matrix();
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_NORMAL:
+                return bitmap;
+            case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+                matrix.setScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                matrix.setRotate(180);
+                break;
+            case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+                matrix.setRotate(180);
+                matrix.postScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_TRANSPOSE:
+                matrix.setRotate(90);
+                matrix.postScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                matrix.setRotate(90);
+                break;
+            case ExifInterface.ORIENTATION_TRANSVERSE:
+                matrix.setRotate(-90);
+                matrix.postScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                matrix.setRotate(-90);
+                break;
+            default:
+                return bitmap;
+        }
+        try {
+            Bitmap bmRotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+            bitmap.recycle();
+            return bmRotated;
+        }
+        catch (OutOfMemoryError e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }

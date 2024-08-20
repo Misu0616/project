@@ -3,9 +3,6 @@ package com.jica.project;
 public class addActivity {
     String actNumber;
     String addActivityT;
-   /* String date;
-    String title;
-    String img; */
 
     public addActivity(String actNumber) {
         this.actNumber = actNumber;

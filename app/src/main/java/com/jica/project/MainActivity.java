@@ -1,6 +1,7 @@
 package com.jica.project;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -57,6 +58,12 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, MyTreeActivity.class);
             startActivity(intent);
             finish();
+
+            // 환경 보호 활동 인증하기 위한 이메일 정보 전달
+            SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("USER_EMAIL", firebaseAuth.getCurrentUser().getEmail());
+            editor.apply();
         }
 
         // 로그인 버튼
@@ -104,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) { // 성공
+
                             Intent intent = new Intent(MainActivity.this, MyTreeActivity.class);
                             startActivity(intent);
                             Toast.makeText(MainActivity.this, "로그인되었습니다", Toast.LENGTH_SHORT).show();
@@ -112,6 +120,12 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
+        
+        // 환경보호 활동 인증하기 위한 이메일 정보 전달 
+        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("USER_EMAIL", emailT);
+        editor.apply(); // 변경 사항 저장
     }
 
 }

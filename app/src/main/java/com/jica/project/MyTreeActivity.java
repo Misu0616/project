@@ -19,6 +19,6 @@ public class MyTreeActivity extends AppCompatActivity {
             Fragment underBar1 = new underBar();
 
             getSupportFragmentManager().beginTransaction().replace(R.id.galleryUnderbar, underBar1).commit();
-            
-    }
+
+        }
 }

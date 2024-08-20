@@ -7,19 +7,31 @@
     android:orientation="vertical"
     tools:context=".RealCameraActivity">
 
-    <androidx.camera.view.PreviewView
+    <!--<androidx.camera.view.PreviewView
         android:id="@+id/previewView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:visibility="gone"/>
-
+-->
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
         android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/recyclebag" />
+
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="예시처럼 사물을 잘 보이게 찍어주세요" />
 
     <Button
         android:id="@+id/btnCamera"

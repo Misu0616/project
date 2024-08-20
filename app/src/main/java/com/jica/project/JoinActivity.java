@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.api.LogDescriptor;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -82,17 +84,19 @@ public class JoinActivity extends AppCompatActivity {
             }
         });
 
-        // 이메일 중복 확인 버튼
+        // 이메일 중복 확인 버튼 - 일단 보류================================================
         btnCheckMail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d("noAnser", "클릭 실행");
                 FirebaseUser currentUser = firebaseAuth.getCurrentUser();
                 String email = memEmailT.getText().toString();
-
+                Log.d("noAnser", "이메일 : " + email);
                 if (currentUser != null) {
                     String firebaseEmail = currentUser.getEmail();
-
+                    Log.d("noAnser", "파이어베이스 이메일 : " +  currentUser.getEmail());
                     if (email.equals(firebaseEmail)) {
+                        Log.d("noAnser", "이메일 중복");
                         Toast.makeText(JoinActivity.this, "중복된 이메일입니다", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(JoinActivity.this, "사용 가능한 이메일입니다", Toast.LENGTH_SHORT).show();
@@ -181,8 +185,9 @@ public class JoinActivity extends AppCompatActivity {
                 // 사용자 정보를 Firebase에 저장
                 String memKey = id;
                 memberInfo memberInfo = new memberInfo(id, pwd, email);
+                String safeEmail = email.replace(".", ",");
 
-                databaseReference.child("memberInfo").child(memKey).setValue(memberInfo).addOnCompleteListener(task -> {
+                databaseReference.child("memberInfo").child(safeEmail).setValue(memberInfo).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                     } else {
                     }

@@ -49,10 +49,6 @@ public class SearchListActivity extends AppCompatActivity {
         Fragment underBar1 = new underBar();
         getSupportFragmentManager().beginTransaction().replace(R.id.underbarSearch, underBar1).commit();
 
-        // recycleview fragment
-       // Fragment recycle = new recycleFragment();
-        // getSupportFragmentManager().beginTransaction().replace(R.id.showList, recycle).commit();
-
         // 검색창 돋보기 클릭 
         search = findViewById(R.id.search);
         search.setOnClickListener(new View.OnClickListener() {
