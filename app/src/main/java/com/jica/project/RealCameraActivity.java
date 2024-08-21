@@ -72,6 +72,8 @@ public class RealCameraActivity extends AppCompatActivity {
     private boolean isCameraInitialized = false;
     ImageView imageView;
 
+    public static final String FILENUM_KEY = "FILENUM_KEY";
+
     private final ActivityResultLauncher<Intent> cameraResultLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
                 Log.d("noAnswer", "1. ActivityResultLauncher");
@@ -205,30 +207,35 @@ public class RealCameraActivity extends AppCompatActivity {
 
         // 환경 보호 종류 position으로 나누기
         int position = getIntent().getIntExtra(ActivityAdapter.ViewHolder.POSITION_KEY, -1); // 기본값 -1
+
         if (position != -1) {
-            Toast.makeText(this, "받은 포지션: " + position, Toast.LENGTH_SHORT).show();
-            Log.d("noAnswer : ", "받은 포지션: " + position);
+            Toast.makeText(this, "real Camera 받은 포지션: " + position, Toast.LENGTH_SHORT).show();
+            Log.d("noAnswer : ", "real Camera 받은 포지션: " + position);
         }
 
         // 사진 이름 현재 날짜로 구별하기
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         String fileName = "photo_" + timeStamp + ".jpg"; // 예: photo_20230818_123456.jpg
-
+        // 업로드한 화일명을 Database나 ShraredPref에 저장한다.
+        // 화일명만 읽어와 보조기능으로 보여주고 선택하게 한다. --- FireStorage에서 검색하여 가져오게한다.
         // UID로 user 구분하기
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
         if (currentUser != null) {
             String userId = currentUser.getUid(); // UID 가져오기
 
             // Firebase 에 업로드
-            saveDoneLists(String.valueOf(position), timeStamp, "false");
+            saveDoneLists(String.valueOf(position), timeStamp, Boolean.valueOf("false"));
 
             // Firebase Storage에 업로드
-            StorageReference imagesRef = storageRef.child(userId + "/" + position + "/" + fileName); // 경로 설정
+            StorageReference imagesRef = storageRef.child(userId).child(fileName); // 경로 설정
             imagesRef.putBytes(data)
                     .addOnSuccessListener(taskSnapshot -> {
                         Toast.makeText(RealCameraActivity.this, "업로드 성공", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(getApplicationContext(), MyGalleryActivity.class);
-                        startActivity(intent);
+                        Intent list = new Intent(this, MyGalleryActivity.class);
+                        list.putExtra(ActivityAdapter.ViewHolder.POSITION_KEY, position); // position 값 전달
+                        list.putExtra(RealCameraActivity.FILENUM_KEY, fileName);
+                        Log.d("noAnswer", "realCamera의 file num : " + fileName);
+                        startActivity(list);
                     })
                     .addOnFailureListener(exception -> {
                         Toast.makeText(RealCameraActivity.this, "업로드 실패", Toast.LENGTH_SHORT).show();
@@ -236,7 +243,7 @@ public class RealCameraActivity extends AppCompatActivity {
         }
     }
 
-    public void saveDoneLists(String title, String date, String admin_check) {
+    public void saveDoneLists(String title, String date, Boolean admin_check) {
         // Firebase에 인증 내역 저장하기
         showDoneList showDoneList = new showDoneList(title, date, admin_check);
 

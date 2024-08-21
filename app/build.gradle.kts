@@ -56,5 +56,9 @@ dependencies {
 
     implementation ("com.github.bumptech.glide:glide:4.14.2")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.14.2")
+    implementation ("com.google.firebase:firebase-firestore:24.0.0")
+    implementation ("com.squareup.picasso:picasso:2.71828")
+    implementation ("com.google.firebase:firebase-auth:21.0.1") // 인증이 필요한 경우
+
 
 }

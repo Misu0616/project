@@ -11,8 +11,17 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class ImagePicAdapter extends RecyclerView.Adapter<ImagePicAdapter.ViewHolder> {
     private List<ImagePicModel> ImagePicList;
@@ -52,4 +61,44 @@ public class ImagePicAdapter extends RecyclerView.Adapter<ImagePicAdapter.ViewHo
         }
 
     }
+
+    // Firestore와 Storage 초기화
+    private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+    private FirebaseStorage storage = FirebaseStorage.getInstance();
+    private StorageReference storageRef = storage.getReference();
+    private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+    String uid = firebaseAuth.getUid();
+
+    // Firestore 데이터 가져오기
+    public void fetchData(String uid) {
+        CollectionReference collectionReference = firestore.collection(uid)
+                .document(uid)
+                .collection("5");
+
+        collectionReference.addSnapshotListener((snapshots, e) -> {
+            if (e != null) {
+                Log.e("FirestoreError", e.getMessage());
+                return;
+            }
+
+            if (snapshots != null) {
+                Log.d("Firestore", "Firestore Connected");
+                ImagePicList.clear(); // 기존 데이터를 지우고 새로 추가
+
+                for (QueryDocumentSnapshot document : snapshots) {
+                    ImagePicModel imagePicModel = document.toObject(ImagePicModel.class);
+
+                    if (imagePicModel != null) {
+                        ImagePicList.add(imagePicModel);
+                        Log.d("Firestore", "Image URL: " + imagePicModel.getImgURL());
+                        Log.d("Firestore1", "imagePicModel : " + imagePicModel.toString());
+                    } else {
+                        Log.e("Firestore", "ImagePicModel is null");
+                    }
+                }
+                notifyDataSetChanged(); // 데이터 변경 알리기
+            }
+        });
+    }
+
 }

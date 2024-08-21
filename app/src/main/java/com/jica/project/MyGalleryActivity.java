@@ -4,19 +4,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -24,75 +19,80 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class MyGalleryActivity extends AppCompatActivity {
 
-    private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    FirebaseAuth firebaseAuth;
-    private FirebaseStorage storage;
-    private StorageReference storageRef;
-
+    private FirebaseAuth firebaseAuth;
     private RecyclerView recyclerViewList, recyclerViewPic;
-    private com.jica.project.ImageAdapter ImageAdapter;
-    private com.jica.project.ImagePicAdapter ImagePicAdapter;
-    private List<ImageModel> ImageList;
-    private List<ImagePicModel> ImageListPic;
+    private ImageAdapter imageAdapter;
+    private ImagePicAdapter imagePicAdapter;
+    private List<ImageModel> imageList;
+    private List<ImagePicModel> imageListPic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_gallery);
 
-        // 프래그먼트 추가 확인하기
-        Fragment underBar1 = new underBar();
-        getSupportFragmentManager().beginTransaction().replace(R.id.galleryUnderbar, underBar1).commit();
+        // 프래그먼트 추가
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.galleryUnderbar, new underBar())
+                .commit();
 
-        // recycleView 출력하기
+        // RecyclerView 초기화
+        initRecyclerViews();
+
+        // Firebase 사용자 인증 초기화
+        firebaseAuth = FirebaseAuth.getInstance();
+        loadImageData();
+        loadImageUrlsFromFirestore();
+    }
+
+    private void initRecyclerViews() {
         recyclerViewList = findViewById(R.id.doneList);
         recyclerViewPic = findViewById(R.id.doneImage);
-        int numberOfColumns = 2; // 열의 개수를 설정 (예: 2열)
+        int numberOfColumns = 2;
+
         recyclerViewList.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
         recyclerViewPic.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
 
-        // recyclerView1(글씨만)
-        ImageList = new ArrayList<>();
-        ImageAdapter = new ImageAdapter(ImageList);
-        recyclerViewList.setAdapter(ImageAdapter);
+        imageList = new ArrayList<>();
+        imageAdapter = new ImageAdapter(imageList);
+        recyclerViewList.setAdapter(imageAdapter);
 
-        // recyclerView2(사진만)
-        ImageListPic = new ArrayList<>();
-        ImagePicAdapter = new ImagePicAdapter(ImageListPic);
-        recyclerViewPic.setAdapter(ImagePicAdapter);
+        imageListPic = new ArrayList<>();
+        imagePicAdapter = new ImagePicAdapter(imageListPic);
+        recyclerViewPic.setAdapter(imagePicAdapter);
+    }
 
-        // Firebase 데이터 가져오기(글씨 데이터만)
-        firebaseAuth = FirebaseAuth.getInstance();
+    private void loadImageData() {
         String memEmail = firebaseAuth.getCurrentUser().getEmail();
         String safeEmail = memEmail.replace(".", ",");
 
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("memberInfo").child(safeEmail).child("imageInfo");
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                .getReference("memberInfo").child(safeEmail).child("imageInfo");
+
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.d("noAnswer", "firebase Connected");
-                ImageList.clear(); // 기존 데이터를 지우고 새로 추가
+                imageList.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     ImageModel activity = snapshot.getValue(ImageModel.class);
                     if (activity != null) {
-                        ImageList.add(activity);
+                        imageList.add(activity);
                     } else {
                         Log.e("noAnswer", "activity is null");
                     }
                 }
-                Log.e("noAnswer", ImageList.toString());
-                ImageAdapter.notifyDataSetChanged(); // 데이터 변경 알리기
+                imageAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -100,59 +100,34 @@ public class MyGalleryActivity extends AppCompatActivity {
                 Log.e("FirebaseError", databaseError.getMessage());
             }
         });
+    }
 
-        // FirebaseStore 데이터 가져오기(사진 데이터만)
-        storage = FirebaseStorage.getInstance();
-        storageRef = storage.getReference();
-/*
-        databaseReference = FirebaseDatabase.getInstance().getReference("memberInfo").child(safeEmail).child("imageInfo");
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.d("noAnswer", "firebase Connected");
-                ImageListPic.clear(); // 기존 데이터를 지우고 새로 추가
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    ImagePicModel imagePicModel = snapshot.getValue(ImagePicModel.class);
-                    if (imagePicModel  != null) {
-                        ImageListPic.add(imagePicModel);
+    private void loadImageUrlsFromFirestore() {
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        firestore.collection(FirebaseAuth.getInstance().getUid()).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<String> imageUrls = new ArrayList<>();
+                        QuerySnapshot querySnapshot = task.getResult();
+                        if (querySnapshot != null) {
+                            for (QueryDocumentSnapshot document : querySnapshot) {
+                                String downloadUrl = document.getString("https://firebasestorage.googleapis.com/v0/b/project-7a683.appspot.com/o/gjniSyDcE9XyV5GcMTYJKHBdmQI3%2Fphoto_20240821_085529.jpg?alt=media&token=5cc5aa15-f703-4b40-9451-cac9afff6487");
+                                if (downloadUrl != null) {
+                                    imageUrls.add(downloadUrl);
+                                }
+                            }
+                            displayImages(imageUrls);
+                        }
                     } else {
-                        Log.e("noAnswer", "activity is null");
+                        Log.w("Firestore", "Error getting documents.", task.getException());
                     }
-                }
-                Log.e("noAnswer", ImageListPic.toString());
-                ImagePicAdapter.notifyDataSetChanged(); // 데이터 변경 알리기
-            }
+                });
+    }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e("FirebaseError", databaseError.getMessage());
-            }
-        });*/
-
-        // 환경 보호 종류 position으로 나누기
-        int position = getIntent().getIntExtra(ActivityAdapter.ViewHolder.POSITION_KEY, -1); // 기본값 -1
-        if (position != -1) {
-            Toast.makeText(this, "my gallery 받은 포지션: " + position, Toast.LENGTH_SHORT).show();
-            Log.d("noAnswer : ", "my gallery 받은 포지션: " + position);
+    private void displayImages(List<String> imageUrls) {
+        if (imageUrls != null && !imageUrls.isEmpty()) {
+            // 예제로 첫 번째 이미지만 표시
+            Picasso.get().load(imageUrls.get(0)).into((Target) recyclerViewPic);
         }
-
-        // 사진 이름 현재 날짜로 구별하기
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        String fileName = "photo_" + timeStamp + ".jpg"; // 예: photo_20230818_123456.jpg
-
-        // UID로 user 구분하기
-        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-        if (currentUser != null) {
-            String userId = currentUser.getUid(); // UID 가져오기
-
-        // 이미지를 다운로드하거나 업로드하는 코드 추가
-            StorageReference imagesRef = storageRef.child(userId + "/" + position + "/" + fileName);
-            imagesRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                // 성공적으로 URL을 가져온 후의 처리
-            }).addOnFailureListener(exception -> {
-                // 오류 처리
-            });
-        }
-
     }
 }

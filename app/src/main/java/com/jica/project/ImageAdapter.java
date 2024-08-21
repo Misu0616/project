@@ -9,7 +9,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
     private List<ImageModel> ImageList;
@@ -29,10 +36,13 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ImageModel image = ImageList.get(position);
-        holder.adminCheck.setText(image.isAdmin_check() ? "true" : "false");
 
         if (holder.datelist != null) {
-            holder.datelist.setText(image.getDate());
+            Date now = new Date();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            String formattedDate = dateFormat.format(now);
+
+            holder.datelist.setText(formattedDate);
         } else {
             Log.e("ActivityAdapter", "datelist is null");
         }
@@ -65,10 +75,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
             Log.e("ActivityAdapter", "titleList is null");
         }
         if (holder.adminCheck != null) {
-            String adminCheckText = holder.adminCheck.getText().toString();
-            if(adminCheckText.equals("false")){
-                holder.adminCheck.setText("인증 확인 중");
-            }
+            // 불리언 값을 문자열로 변환하여 TextView에 설정
+            holder.adminCheck.setText(image.isAdmin_check() ? "인증됨" : "인증 확인 중");
         } else {
             Log.e("ActivityAdapter", "adminCheck is null");
         }
