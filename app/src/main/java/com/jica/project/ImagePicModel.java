@@ -1,5 +1,18 @@
 package com.jica.project;
 
+import android.app.Activity;
+import android.util.Log;
+
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class ImagePicModel {
     private String imgURL;
 
@@ -24,5 +37,6 @@ public class ImagePicModel {
                 "imgURL='" + imgURL + '\'' +
                 '}';
     }
+
 }
 

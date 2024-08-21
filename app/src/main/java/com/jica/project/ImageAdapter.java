@@ -25,6 +25,9 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         this.ImageList = ImageList;
     }
 
+    public ImageAdapter(ImagePicAdapter imagePicAdapter, List<ImagePicModel> imagePicList) {
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

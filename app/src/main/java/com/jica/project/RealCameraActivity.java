@@ -43,6 +43,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 /*import com.yanzhenjie.permission.Action;
@@ -53,8 +56,10 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -66,7 +71,7 @@ public class RealCameraActivity extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     File file;
-
+    private Uri imageUri;
     private ImageCapture imageCapture;
     private ExecutorService cameraExecutor;
     private boolean isCameraInitialized = false;
@@ -87,6 +92,8 @@ public class RealCameraActivity extends AppCompatActivity {
                             imageView.setImageBitmap(rotatedBitmap);
                             imageView.setVisibility(View.VISIBLE);
                             uploadImageToFirebase(rotatedBitmap);
+                            uploadImageToFirebaseStorage(imageUri);
+
                         } else {
                             Log.e("ImageError", "Bitmap is null");
                         }
@@ -176,6 +183,7 @@ public class RealCameraActivity extends AppCompatActivity {
     private void takePicture() {
         Log.d("noAnswer", "5. takePicture");
         file = createFile();
+        imageUri = FileProvider.getUriForFile(this, "com.jica.project.fileprovider", file);
         Uri uri;
 
         if (Build.VERSION.SDK_INT >= 24) {
@@ -184,13 +192,17 @@ public class RealCameraActivity extends AppCompatActivity {
             uri = Uri.fromFile(file);
         }
 
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        if (uri != null) {
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
 
-        cameraResultLauncher.launch(intent);
+            cameraResultLauncher.launch(intent);
+        } else {
+            Log.e("CameraError", "Uri is null");
+            Toast.makeText(this, "사진을 저장할 수 없습니다.", Toast.LENGTH_SHORT).show();
+        }
     }
-
     private File createFile(){
         Log.d("noAnswer", "6. createFile");
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
@@ -215,9 +227,7 @@ public class RealCameraActivity extends AppCompatActivity {
 
         // 사진 이름 현재 날짜로 구별하기
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        String fileName = "photo_" + timeStamp + ".jpg"; // 예: photo_20230818_123456.jpg
-        // 업로드한 화일명을 Database나 ShraredPref에 저장한다.
-        // 화일명만 읽어와 보조기능으로 보여주고 선택하게 한다. --- FireStorage에서 검색하여 가져오게한다.
+        String fileName = "photo_" + timeStamp + ".jpg";
         // UID로 user 구분하기
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
         if (currentUser != null) {
@@ -242,7 +252,61 @@ public class RealCameraActivity extends AppCompatActivity {
                     });
         }
     }
+    private void uploadImageToFirebaseStorage(Uri imageUri) {
+        if (imageUri == null) {
+            Log.e("FirebaseStorage", "Uri is null");
+            Toast.makeText(this, "사진의 Uri가 null입니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+
+        String userId = FirebaseAuth.getInstance().getUid();
+        if (userId == null) {
+            Log.e("FirebaseStorage", "User ID is null");
+            Toast.makeText(this, "사용자 ID가 null입니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String fileName = "photo_" + timeStamp + ".jpg";
+
+        StorageReference imageRef = storageRef.child(userId).child(fileName);
+
+        imageRef.putFile(imageUri)
+                .addOnSuccessListener(taskSnapshot -> {
+                    imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                        String downloadUrl = uri.toString();
+                        saveImageInfoToFirestore(fileName, downloadUrl);
+                    }).addOnFailureListener(exception -> {
+                        Log.e("FirebaseStorage", "Error getting download URL", exception);
+                    });
+                })
+                .addOnFailureListener(exception -> {
+                    Log.e("FirebaseStorage", "Upload failed", exception);
+                });
+    }
+
+
+    private void saveImageInfoToFirestore(String fileName, String downloadUrl) {
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        String userId = FirebaseAuth.getInstance().getUid();
+        CollectionReference imagesRef = firestore.collection(userId);
+
+        Map<String, Object> imageInfo = new HashMap<>();
+        imageInfo.put("fileName", fileName);
+        imageInfo.put("downloadUrl", downloadUrl);
+        imageInfo.put("timestamp", FieldValue.serverTimestamp());
+
+        imagesRef.add(imageInfo)
+                .addOnSuccessListener(documentReference -> {
+                    Log.d("Firestore", "DocumentSnapshot added with ID: " + documentReference.getId());
+                })
+                .addOnFailureListener(exception -> {
+                    Log.w("Firestore", "Error adding document", exception);
+                });
+    }
     public void saveDoneLists(String title, String date, Boolean admin_check) {
         // Firebase에 인증 내역 저장하기
         showDoneList showDoneList = new showDoneList(title, date, admin_check);

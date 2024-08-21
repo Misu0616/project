@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +23,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -31,6 +34,7 @@ import java.util.List;
 public class MyGalleryActivity extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
+    private FirebaseStorage firebaseStorage;
     private RecyclerView recyclerViewList, recyclerViewPic;
     private ImageAdapter imageAdapter;
     private ImagePicAdapter imagePicAdapter;
@@ -42,6 +46,15 @@ public class MyGalleryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_gallery);
 
+        int position = getIntent().getIntExtra(ActivityAdapter.ViewHolder.POSITION_KEY, -1);
+        String fileName = getIntent().getStringExtra(RealCameraActivity.FILENUM_KEY);
+
+        if (fileName != "") {
+            Toast.makeText(this, "myGallery 받은 filenum: " + fileName, Toast.LENGTH_SHORT).show();
+            Log.d("noAnswer : ", "myGallery 받은 filenum: " + fileName);
+            Log.d("noAnswer : ", "myGallery 받은 position: " + position);
+        }
+
         // 프래그먼트 추가
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.galleryUnderbar, new underBar())
@@ -52,8 +65,10 @@ public class MyGalleryActivity extends AppCompatActivity {
 
         // Firebase 사용자 인증 초기화
         firebaseAuth = FirebaseAuth.getInstance();
+        firebaseStorage = FirebaseStorage.getInstance();
+
         loadImageData();
-        loadImageUrlsFromFirestore();
+        loadImageUrlsFromFirestore(fileName, position);
     }
 
     private void initRecyclerViews() {
@@ -69,7 +84,7 @@ public class MyGalleryActivity extends AppCompatActivity {
         recyclerViewList.setAdapter(imageAdapter);
 
         imageListPic = new ArrayList<>();
-        imagePicAdapter = new ImagePicAdapter(imageListPic);
+        imagePicAdapter = new ImagePicAdapter(this, imageListPic);
         recyclerViewPic.setAdapter(imagePicAdapter);
     }
 
@@ -101,33 +116,43 @@ public class MyGalleryActivity extends AppCompatActivity {
             }
         });
     }
-
-    private void loadImageUrlsFromFirestore() {
+    private void loadImageUrlsFromFirestore(String fileName, int position) {
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        firestore.collection(FirebaseAuth.getInstance().getUid()).get()
+        String userId = FirebaseAuth.getInstance().getUid();
+        Log.d("noAnswer", "userID : " + userId);
+        firestore.collection(userId).get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        List<String> imageUrls = new ArrayList<>();
+                        List<ImagePicModel> imageUrls = new ArrayList<>();
+
+                        Log.d("noAnswer", "imageUrls : " + imageUrls);
+                        Log.d("noAnswer", "imageUrls toString : " + imageUrls.toString());
                         QuerySnapshot querySnapshot = task.getResult();
                         if (querySnapshot != null) {
                             for (QueryDocumentSnapshot document : querySnapshot) {
-                                String downloadUrl = document.getString("https://firebasestorage.googleapis.com/v0/b/project-7a683.appspot.com/o/gjniSyDcE9XyV5GcMTYJKHBdmQI3%2Fphoto_20240821_085529.jpg?alt=media&token=5cc5aa15-f703-4b40-9451-cac9afff6487");
+                                String downloadUrl = document.getString(fileName);
                                 if (downloadUrl != null) {
-                                    imageUrls.add(downloadUrl);
+                                    imageUrls.add(new ImagePicModel(downloadUrl));
+                                    Log.d("noAnswer", "image adapter downloadUrl : " + downloadUrl);
                                 }
                             }
-                            displayImages(imageUrls);
+                            imagePicAdapter.updateImageList(imageUrls);
                         }
                     } else {
                         Log.w("Firestore", "Error getting documents.", task.getException());
                     }
                 });
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        StorageReference imagesRef = storageRef.child(userId).child(fileName);
+
+        imagesRef.getDownloadUrl().addOnSuccessListener(uri -> {
+            String downloadUrl = uri.toString();
+            Log.d("FirebaseStorage", "imagesRef URL: " + imagesRef);
+            Log.d("FirebaseStorage", "Download URL: " + downloadUrl);
+        }).addOnFailureListener(exception -> {
+            Log.w("FirebaseStorage", "Error getting download URL.", exception);
+        });
     }
 
-    private void displayImages(List<String> imageUrls) {
-        if (imageUrls != null && !imageUrls.isEmpty()) {
-            // 예제로 첫 번째 이미지만 표시
-            Picasso.get().load(imageUrls.get(0)).into((Target) recyclerViewPic);
-        }
-    }
 }
