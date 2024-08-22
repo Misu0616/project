@@ -1,17 +1,18 @@
 package com.jica.project;
 
+import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.bumptech.glide.Glide;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -20,14 +21,13 @@ import java.util.Locale;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
     private List<ImageModel> ImageList;
+    private Context context;
 
-    public ImageAdapter(List<ImageModel> ImageList) {
-        this.ImageList = ImageList;
+    public ImageAdapter(Context context, List<ImageModel> imageList) {
+        this.context = context;
+        this.ImageList = imageList;
+        notifyDataSetChanged();
     }
-
-    public ImageAdapter(ImagePicAdapter imagePicAdapter, List<ImagePicModel> imagePicList) {
-    }
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -40,15 +40,30 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ImageModel image = ImageList.get(position);
 
+        if (context != null) {
+            String imageUrl = image.getImgURL();
+            Log.d("ImageAdapterkkk", "Image URL: " + imageUrl);
+
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+                Glide.with(context)
+                        .load(imageUrl)
+                        .into(holder.imageView);
+            } else {
+                Log.e("ImageAdapter", "Image URL is null or empty");
+            }
+        } else {
+            Log.e("ImageAdapter", "Context is null");
+        }
+
         if (holder.datelist != null) {
             Date now = new Date();
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             String formattedDate = dateFormat.format(now);
-
             holder.datelist.setText(formattedDate);
         } else {
             Log.e("ActivityAdapter", "datelist is null");
         }
+
         if (holder.titleList != null) {
             switch(image.getTitle()) {
                 case "0": holder.titleList.setText("걷기");
@@ -95,14 +110,22 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         TextView datelist;
         TextView titleList;
         TextView adminCheck;
+        ImageView imageView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             datelist = itemView.findViewById(R.id.date);
             titleList = itemView.findViewById(R.id.activityTitle);
             adminCheck = itemView.findViewById(R.id.adminCheck);
+            imageView = itemView.findViewById(R.id.imagePicList);
 
         }
 
+    }
+    // 데이터 리스트 업데이트 메서드 추가
+    public void updateImageList(List<ImageModel> newImageList) {
+        this.ImageList.clear();
+        this.ImageList.addAll(newImageList);
+        notifyDataSetChanged();
     }
 }

@@ -2,19 +2,18 @@ package com.jica.project;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.Activity;
-import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,21 +24,21 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class MyGalleryActivity extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
     private FirebaseStorage firebaseStorage;
-    private RecyclerView recyclerViewList, recyclerViewPic;
+    private RecyclerView recyclerViewList;
     private ImageAdapter imageAdapter;
-    private ImagePicAdapter imagePicAdapter;
     private List<ImageModel> imageList;
-    private List<ImagePicModel> imageListPic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +48,7 @@ public class MyGalleryActivity extends AppCompatActivity {
         int position = getIntent().getIntExtra(ActivityAdapter.ViewHolder.POSITION_KEY, -1);
         String fileName = getIntent().getStringExtra(RealCameraActivity.FILENUM_KEY);
 
-        if (fileName != "") {
+        if (fileName != null && !fileName.isEmpty()) {
             Toast.makeText(this, "myGallery 받은 filenum: " + fileName, Toast.LENGTH_SHORT).show();
             Log.d("noAnswer : ", "myGallery 받은 filenum: " + fileName);
             Log.d("noAnswer : ", "myGallery 받은 position: " + position);
@@ -67,47 +66,53 @@ public class MyGalleryActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
 
-        loadImageData();
-        loadImageUrlsFromFirestore(fileName, position);
+        // 데이터 로드
+        loadData();
     }
 
     private void initRecyclerViews() {
         recyclerViewList = findViewById(R.id.doneList);
-        recyclerViewPic = findViewById(R.id.doneImage);
         int numberOfColumns = 2;
 
         recyclerViewList.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
-        recyclerViewPic.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
 
         imageList = new ArrayList<>();
-        imageAdapter = new ImageAdapter(imageList);
+        imageAdapter = new ImageAdapter(this, imageList);
         recyclerViewList.setAdapter(imageAdapter);
-
-        imageListPic = new ArrayList<>();
-        imagePicAdapter = new ImagePicAdapter(this, imageListPic);
-        recyclerViewPic.setAdapter(imagePicAdapter);
     }
 
-    private void loadImageData() {
+    private void loadData() {
         String memEmail = firebaseAuth.getCurrentUser().getEmail();
-        String safeEmail = memEmail.replace(".", ",");
+        String safeEmail = memEmail != null ? memEmail.replace(".", ",") : "";
+
+        Map<String, ImageModel> imageMap = new HashMap<>();
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance()
                 .getReference("memberInfo").child(safeEmail).child("imageInfo");
 
+        // Firebase Realtime Database에서 데이터 로드
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                imageList.clear();
+                List<ImageModel> imageList = new ArrayList<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     ImageModel activity = snapshot.getValue(ImageModel.class);
-                    if (activity != null) {
-                        imageList.add(activity);
+                    ImageModel imageModel = snapshot.getValue(ImageModel.class);
+                    if (activity != null && activity.getImgURL() != null) {
+                        imageMap.put(activity.getImgURL(), activity);
                     } else {
-                        Log.e("noAnswer", "activity is null");
+                        Log.e("noAnswer", "activity is null or imgURL is null");
+                    }
+                    if (imageModel != null) {
+                        imageList.add(imageModel);
+                    } else {
+                        Log.e("MyGalleryActivity", "imageModel is null for snapshot: " + snapshot.getKey());
                     }
                 }
-                imageAdapter.notifyDataSetChanged();
+                // Firestore에서 데이터 로드
+                loadImageUrlsFromFirestore(imageMap);
+                imageAdapter.updateImageList(imageList);
+
             }
 
             @Override
@@ -116,43 +121,85 @@ public class MyGalleryActivity extends AppCompatActivity {
             }
         });
     }
-    private void loadImageUrlsFromFirestore(String fileName, int position) {
-        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+
+    private void loadImageUrlsFromFirestore(Map<String, ImageModel> imageMap) {
         String userId = FirebaseAuth.getInstance().getUid();
-        Log.d("noAnswer", "userID : " + userId);
+        if (userId == null) {
+            Log.e("Firestore", "User ID is null");
+            return;
+        }
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+
         firestore.collection(userId).get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        List<ImagePicModel> imageUrls = new ArrayList<>();
-
-                        Log.d("noAnswer", "imageUrls : " + imageUrls);
-                        Log.d("noAnswer", "imageUrls toString : " + imageUrls.toString());
+                        Log.d("downloadUrl", "task.isSuccessful() ");
                         QuerySnapshot querySnapshot = task.getResult();
                         if (querySnapshot != null) {
+                            Log.d("downloadUrl", "querySnapshot");
+                            int totalDocuments = querySnapshot.size();
+                            if (totalDocuments == 0) {
+                                Log.d("downloadUrl", "No documents found.");
+                                return;
+                            }
+                            List<Task<Uri>> downloadTasks = new ArrayList<>();
                             for (QueryDocumentSnapshot document : querySnapshot) {
-                                String downloadUrl = document.getString(fileName);
-                                if (downloadUrl != null) {
-                                    imageUrls.add(new ImagePicModel(downloadUrl));
-                                    Log.d("noAnswer", "image adapter downloadUrl : " + downloadUrl);
+                                Log.d("downloadUrl", "QueryDocumentSnapshot");
+                                String imageFileName = document.getString("fileName");
+                                Timestamp timestamp = document.getTimestamp("timestamp");
+                                String dateString = timestamp.toDate().toString();
+                                Log.d("downloadUrl", "imageFileName -> " + imageFileName);
+                                if (imageFileName != null) {
+                                    StorageReference imageRef = storageRef.child(userId).child(imageFileName);
+                                    Log.d("downloadUrl", "imageRef -> " + imageRef);
+                                    Log.d("downloadUrl", "Path to check: " + imageRef.getPath());
+                                    downloadTasks.add(imageRef.getDownloadUrl()
+                                            .addOnSuccessListener(uri -> {
+                                                String downloadUrl = uri.toString();
+                                                Log.d("Firestore", "downloadUrl -> " + downloadUrl);
+                                                ImageModel image = imageMap.get(downloadUrl);
+                                                if (image == null) {
+                                                    image = new ImageModel();
+                                                }
+                                                image.setImgURL(downloadUrl);
+                                                image.setTitle(image.getTitle());
+                                                image.setDate(dateString);
+                                                //imageMap.put(downloadUrl, image);
+
+                                                Log.d("Firestore", "Image list updated333: " + image.getImgURL());
+                                                Log.d("Firestore", "Image list updated111: " + imageList);
+                                            })
+                                            .addOnFailureListener(exception -> {
+                                                Log.w("FirebaseStorage", "Error getting download URL.", exception);
+                                            }));
+                                } else {
+                                    Log.w("Firestore", "Image file name is null for document: " + document.getId());
                                 }
                             }
-                            imagePicAdapter.updateImageList(imageUrls);
+
+                            // When all download URL tasks are completed
+                            Tasks.whenAllComplete(downloadTasks).addOnCompleteListener(completedTask -> {
+                                List<String> imageUrls = imageList.stream()
+                                        .map(ImageModel::getImgURL)
+                                        .filter(Objects::nonNull)
+                                        .collect(Collectors.toList());
+
+                                // Log or use the extracted image URLs
+                                Log.d("Firestore", "Image list updated2: " + imageList);
+
+                                imageAdapter.updateImageList(imageList);
+
+                            });
+
+                        } else {
+                            Log.w("Firestore", "QuerySnapshot is null.");
                         }
                     } else {
                         Log.w("Firestore", "Error getting documents.", task.getException());
                     }
                 });
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
-        StorageReference imagesRef = storageRef.child(userId).child(fileName);
 
-        imagesRef.getDownloadUrl().addOnSuccessListener(uri -> {
-            String downloadUrl = uri.toString();
-            Log.d("FirebaseStorage", "imagesRef URL: " + imagesRef);
-            Log.d("FirebaseStorage", "Download URL: " + downloadUrl);
-        }).addOnFailureListener(exception -> {
-            Log.w("FirebaseStorage", "Error getting download URL.", exception);
-        });
     }
-
 }

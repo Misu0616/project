@@ -1,6 +1,5 @@
 package com.jica.project;
 
-import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,12 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ImagePicAdapter extends RecyclerView.Adapter<ImagePicAdapter.ViewHolder> {
@@ -33,7 +27,7 @@ public class ImagePicAdapter extends RecyclerView.Adapter<ImagePicAdapter.ViewHo
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.imageviewlist, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.galleryviewlist, parent, false);
         Log.d("ImagePicAdapter", "View created: " + view);
         return new ViewHolder(view);
     }
@@ -41,6 +35,8 @@ public class ImagePicAdapter extends RecyclerView.Adapter<ImagePicAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         String imageUrl  = imagePicList.get(position).getImgURL();
+        Log.d("noAnswer", " imagepicAdapter imgurl : " + imageUrl);
+        Log.d("noAnswer", " imagePicList.size() : " + imagePicList.size());
         Glide.with(context).load(imageUrl).into(holder.imageView);
     }
 
@@ -61,7 +57,8 @@ public class ImagePicAdapter extends RecyclerView.Adapter<ImagePicAdapter.ViewHo
 
     // 데이터 리스트 업데이트 메서드 추가
     public void updateImageList(List<ImagePicModel> newImageList) {
-        this.imagePicList = newImageList;
+        this.imagePicList.clear();
+        this.imagePicList.addAll(newImageList);
         notifyDataSetChanged();
     }
 

@@ -71,10 +71,6 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
                                     Intent camera = new Intent(itemView.getContext(), RealCameraActivity.class);
                                     camera.putExtra(ActivityAdapter.ViewHolder.POSITION_KEY, position);
                                     itemView.getContext().startActivity(camera);
-
-                                    /*Intent list = new Intent(itemView.getContext(), MyGalleryActivity.class);
-                                    camera.putExtra(ActivityAdapter.ViewHolder.POSITION_KEY, position);
-                                    // itemView.getContext().startActivity(list);*/
                                 }
                             });
 
