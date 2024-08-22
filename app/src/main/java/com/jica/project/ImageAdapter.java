@@ -1,7 +1,6 @@
 package com.jica.project;
 
 import android.content.Context;
-import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,10 +20,8 @@ import java.util.Locale;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
     private List<ImageModel> ImageList;
-    private Context context;
 
-    public ImageAdapter(Context context, List<ImageModel> imageList) {
-        this.context = context;
+    public ImageAdapter(List<ImageModel> imageList) {
         this.ImageList = imageList;
         notifyDataSetChanged();
     }
@@ -40,20 +37,14 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ImageModel image = ImageList.get(position);
 
-        if (context != null) {
-            String imageUrl = image.getImgURL();
-            Log.d("ImageAdapterkkk", "Image URL: " + imageUrl);
-
-            if (imageUrl != null && !imageUrl.isEmpty()) {
-                Glide.with(context)
-                        .load(imageUrl)
+    // 이미지가 있을 경우 Glide를 사용하여 로드
+            if (image.getImgURL() != null && !image.getImgURL().isEmpty()) {
+                Glide.with(holder.imageView.getContext())
+                        .load(image.getImgURL())
                         .into(holder.imageView);
             } else {
-                Log.e("ImageAdapter", "Image URL is null or empty");
+                holder.imageView.setImageResource(android.R.color.transparent); // 이미지가 없을 경우 투명하게 설정
             }
-        } else {
-            Log.e("ImageAdapter", "Context is null");
-        }
 
         if (holder.datelist != null) {
             Date now = new Date();

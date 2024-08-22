@@ -22,10 +22,6 @@ public class ImageModel {
 
     public ImageModel() {
     }
-    public ImageModel(String imgURL) {
-        this.imgURL = imgURL;
-    }
-
     public ImageModel(String title, String date, boolean admin_check, String imgURL) {
         this.title = title;
         this.date = date;

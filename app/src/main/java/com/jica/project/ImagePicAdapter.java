@@ -18,7 +18,7 @@ public class ImagePicAdapter extends RecyclerView.Adapter<ImagePicAdapter.ViewHo
     private List<ImagePicModel> imagePicList;
     private Context context;
 
-    public ImagePicAdapter(Context context, List<ImagePicModel> imagePicList) {
+    public ImagePicAdapter(List<ImagePicModel> imagePicList) {
 
         this.context = context;
         this.imagePicList = imagePicList;
