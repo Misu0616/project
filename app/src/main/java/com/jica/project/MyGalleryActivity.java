@@ -106,7 +106,7 @@ public class MyGalleryActivity extends AppCompatActivity {
                             Log.e("answer", "downloadurl : " +  downloadurl);
                             Log.e("answer", "imageList : " +  imageList.toString());
 
-                            imageList.add(new ImageModel(date,title,admin_check,downloadurl));
+                            imageList.add(new ImageModel(title, date, admin_check,downloadurl));
                             Log.e("answer", "imageList : " +  imageList.toString());
                         }
                         // 어댑터에 데이터 변경 사항을 알립니다.
