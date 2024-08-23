@@ -49,7 +49,7 @@ public class MyGalleryActivity extends AppCompatActivity {
 
 
         // 데이터 로드
-       // loadData();
+       loadData();
     }
 
     private void initRecyclerViews() {
@@ -62,13 +62,9 @@ public class MyGalleryActivity extends AppCompatActivity {
         imageAdapter = new ImageAdapter(imageList);
         recyclerViewList.setAdapter(imageAdapter);
 
-        imagepicList = new ArrayList<>();
+       /* imagepicList = new ArrayList<>();
         imagepicAdapter = new ImagePicAdapter(imagepicList);
-        recyclerViewList.setAdapter(imagepicAdapter);
-
-        // 데이터 로드
-        //loadData();
-        loadImagesFromFirestore();
+        recyclerViewList.setAdapter(imagepicAdapter);*/
     }
 
     private void loadData() {
@@ -78,43 +74,12 @@ public class MyGalleryActivity extends AppCompatActivity {
         String memEmail = firebaseAuth.getCurrentUser().getEmail();
         String safeEmail = memEmail != null ? memEmail.replace(".", ",") : "";
 
-        Map<String, ImageModel> imageMap = new HashMap<>();
-
         String userId = FirebaseAuth.getInstance().getUid();
         Log.e("noAnswer", "userId     ---- > " + userId);
         if (userId == null) {
             Log.e("Firestore", "User ID is null");
             return;
         }
-
-        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-
-        firestore.collection(userId).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                Log.e("noAnswer", "열림?11");
-                for (QueryDocumentSnapshot document : task.getResult()) {
-                    Log.e("noAnswer", "열림?22");
-
-                    String downloadUrl = document.getString("downloadUrl");
-                    Log.e("noAnswer", "downloadUrl : " + downloadUrl);
-
-                    if (downloadUrl != null) {
-                        //ImageModel imageModel = new ImageModel(null,null, false, downloadUrl); // 다른 필드는 null 또는 기본값으로 설정
-                        //imageList.add(imageModel);
-                        for(int i = 0; i<downloadUrl.length(); i++){
-                            imageList.get(i).setImgURL(downloadUrl);
-                        }
-                        Log.e("noAnswer", "imageList ???? " + imageList);
-                    } else {
-                        Log.e("noAnswer", "downloadUrl is null");
-                    }
-                }
-                imageAdapter.notifyDataSetChanged();
-            } else {
-                // 오류 처리
-                Log.e("Firestore", "Error getting documents: ", task.getException());
-            }
-        });
 
         DatabaseReference databaseReference = FirebaseDatabase.getInstance()
                 .getReference("memberInfo").child(safeEmail).child("imageInfo");
@@ -127,17 +92,15 @@ public class MyGalleryActivity extends AppCompatActivity {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     ImageModel activity = snapshot.getValue(ImageModel.class);
                     Log.e("noAnswer", "activity : " + activity);
-                    Log.e("noAnswer", "getImgURL : " + activity.getImgURL());
-                    if (activity != null && activity.getImgURL() != null) {
-                        imageMap.put(activity.getImgURL(), activity);
+                    if (activity != null) {
                         imageList.add(activity);
                     } else {
                         Log.e("noAnswer", "activity is null or imgURL is null");
                     }
                 }
 
-                // Firestore에서 이미지 URL 로드
-               // loadImageUrlsFromFirestore(imageMap);
+                // 어댑터에 데이터 변경 사항을 알림
+                imageAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -145,47 +108,6 @@ public class MyGalleryActivity extends AppCompatActivity {
                 Log.e("FirebaseError", databaseError.getMessage());
             }
         });
-    }
-
-    private void loadImagesFromFirestore() {
-        String userId = FirebaseAuth.getInstance().getUid();
-        Log.e("noAnswer", "userId     ---- > " + userId);
-        if (userId == null) {
-            Log.e("Firestore", "User ID is null");
-            return;
-        }
-
-        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-
-        firestore.collection(userId).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                Log.e("noAnswer", "열림?11");
-                for (QueryDocumentSnapshot document : task.getResult()) {
-                    Log.e("noAnswer", "열림?22");
-
-                    String downloadUrl = document.getString("downloadUrl");
-                Log.e("noAnswer", "downloadUrl : " + downloadUrl);
-
-                if (downloadUrl != null) {
-                    //ImageModel imageModel = new ImageModel(null,null, false, downloadUrl); // 다른 필드는 null 또는 기본값으로 설정
-                    //imageList.add(imageModel);
-                    for(int i=0; i<downloadUrl.length(); i++){
-                    imageList.get(0).setImgURL(downloadUrl);
-                    }
-                    Log.e("noAnswer", "imageList ====== " + imageList);
-                    ImagePicModel imagepicModel = new ImagePicModel(downloadUrl); // 다른 필드는 null 또는 기본값으로 설정
-                    imagepicList.add(imagepicModel);
-                    Log.e("noAnswer", "imagepicList ???? " + imagepicList);
-                } else {
-                    Log.e("noAnswer", "downloadUrl is null");
-                }
-            }
-                imageAdapter.notifyDataSetChanged();
-            } else {
-                // 오류 처리
-                    Log.e("Firestore", "Error getting documents: ", task.getException());
-                }
-            });
 
     }
 }

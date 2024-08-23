@@ -18,15 +18,13 @@ public class ImageModel {
     private String title;
     private String date;
     private boolean admin_check;
-    private String imgURL;
 
     public ImageModel() {
     }
-    public ImageModel(String title, String date, boolean admin_check, String imgURL) {
+    public ImageModel(String title, String date, boolean admin_check) {
         this.title = title;
         this.date = date;
         this.admin_check = admin_check;
-        this.imgURL = imgURL;
     }
 
     public String getTitle() {
@@ -53,21 +51,12 @@ public class ImageModel {
         this.admin_check = admin_check;
     }
 
-    public String getImgURL() {
-        return imgURL;
-    }
-
-    public void setImgURL(String imgURL) {
-        this.imgURL = imgURL;
-    }
-
     @Override
     public String toString() {
         return "ImageModel{" +
                 "title='" + title + '\'' +
                 ", date='" + date + '\'' +
                 ", admin_check=" + admin_check +'\'' +
-                "imgURL='" + imgURL + '\'' +
                 '}';
     }
 }

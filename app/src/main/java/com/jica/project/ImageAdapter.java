@@ -38,13 +38,13 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         ImageModel image = ImageList.get(position);
 
     // 이미지가 있을 경우 Glide를 사용하여 로드
-            if (image.getImgURL() != null && !image.getImgURL().isEmpty()) {
+          /*  if (image.getImgURL() != null && !image.getImgURL().isEmpty()) {
                 Glide.with(holder.imageView.getContext())
                         .load(image.getImgURL())
                         .into(holder.imageView);
             } else {
                 holder.imageView.setImageResource(android.R.color.transparent); // 이미지가 없을 경우 투명하게 설정
-            }
+            }*/
 
         if (holder.datelist != null) {
             Date now = new Date();
