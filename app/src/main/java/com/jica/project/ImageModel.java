@@ -67,6 +67,7 @@ public class ImageModel {
                 "title='" + title + '\'' +
                 ", date='" + date + '\'' +
                 ", admin_check=" + admin_check +'\'' +
+                ", admin_check=" + downloadurl +'\'' +
                 '}';
     }
 }

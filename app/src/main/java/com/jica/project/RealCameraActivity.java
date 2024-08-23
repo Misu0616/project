@@ -34,8 +34,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 /*import com.yanzhenjie.permission.Action;
@@ -45,8 +47,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -65,6 +69,8 @@ public class RealCameraActivity extends AppCompatActivity {
     private ExecutorService cameraExecutor;
     private boolean isCameraInitialized = false;
     ImageView imageView;
+    FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+    String userId = FirebaseAuth.getInstance().getUid();
 
     public static final String FILENUM_KEY = "FILENUM_KEY";
 
@@ -81,7 +87,6 @@ public class RealCameraActivity extends AppCompatActivity {
                             imageView.setImageBitmap(rotatedBitmap);
                             imageView.setVisibility(View.VISIBLE);
                             uploadImageToFirebase(rotatedBitmap);
-                            //uploadImageToFirebaseStorage(imageUri);
 
                         } else {
                             Log.e("ImageError", "Bitmap is null");
@@ -223,7 +228,7 @@ public class RealCameraActivity extends AppCompatActivity {
             String userId = currentUser.getUid(); // UID 가져오기
 
             // Firebase 에 업로드
-            saveDoneLists(String.valueOf(position), timeStamp, Boolean.valueOf("false"));
+            // saveDoneLists(String.valueOf(position), timeStamp, Boolean.valueOf("false"));
 
             // Firebase Storage에 업로드
             StorageReference imagesRef = storageRef.child(userId).child(fileName); // 경로 설정
@@ -255,46 +260,9 @@ public class RealCameraActivity extends AppCompatActivity {
                     });
         }
     }
-   /* private void uploadImageToFirebaseStorage(Uri imageUri) {
-        if (imageUri == null) {
-            Log.e("FirebaseStorage", "Uri is null");
-            Toast.makeText(this, "사진의 Uri가 null입니다.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
-
-        String userId = FirebaseAuth.getInstance().getUid();
-        if (userId == null) {
-            Log.e("FirebaseStorage", "User ID is null");
-            Toast.makeText(this, "사용자 ID가 null입니다.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        String fileName = "photo_" + timeStamp + ".jpg";
-
-        StorageReference imageRef = storageRef.child(userId).child(fileName);
-
-        imageRef.putFile(imageUri)
-                .addOnSuccessListener(taskSnapshot -> {
-                    imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                        String downloadUrl = uri.toString();
-                        saveImageInfoToFirestore(String title, String date, Boolean admin_check, fileName, downloadUrl);
-                    }).addOnFailureListener(exception -> {
-                        Log.e("FirebaseStorage", "Error getting download URL", exception);
-                    });
-                })
-                .addOnFailureListener(exception -> {
-                    Log.e("FirebaseStorage", "Upload failed", exception);
-                });
-    }
-*/
 
     private void saveImageInfoToFirestore(String title, String date, Boolean admin_check, String fileName, String downloadUrl) {
-        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        String userId = FirebaseAuth.getInstance().getUid();
+
         CollectionReference imagesRef = firestore.collection(userId);
 
         Map<String, Object> imageInfo = new HashMap<>();
@@ -307,13 +275,28 @@ public class RealCameraActivity extends AppCompatActivity {
         imagesRef.add(imageInfo)
                 .addOnSuccessListener(documentReference -> {
                     Log.d("Firestore", "DocumentSnapshot added with ID: " + documentReference.getId());
+                    String newDocumentId = documentReference.getId();
+                    saveDocumentIdToCollection(newDocumentId);
                 })
                 .addOnFailureListener(exception -> {
                     Log.w("Firestore", "Error adding document", exception);
                 });
     }
+    private void saveDocumentIdToCollection(String documentId) {
+        // documentIds 컬렉션에 문서 ID 저장
+        Map<String, Object> idData = new HashMap<>();
+        idData.put("documentId", documentId);
 
-    public void saveDoneLists(String title, String date, Boolean admin_check) {
+        firestore.collection("documentId").add(idData)
+                .addOnSuccessListener(documentReference -> {
+                    Log.d("FirestoreHelper", "Document ID saved to documentIds collection: " + documentId);
+                })
+                .addOnFailureListener(e -> {
+                    Log.w("FirestoreHelper", "Error saving document ID", e);
+                });
+    }
+
+    /*public void saveDoneLists(String title, String date, Boolean admin_check) {
         // Firebase에 인증 내역 저장하기
         showDoneList showDoneList = new showDoneList(title, date, admin_check);
 
@@ -341,7 +324,7 @@ public class RealCameraActivity extends AppCompatActivity {
         } else {
             Log.d("Firebase", "사용자가 로그인하지 않았습니다.");
         }
-    }
+    }*/
     private int getExifOrientation(String path) {
         int orientation = ExifInterface.ORIENTATION_UNDEFINED;
         try {

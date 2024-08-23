@@ -38,8 +38,6 @@ public class MyGalleryActivity extends AppCompatActivity {
     private RecyclerView recyclerViewList;
     private ImageAdapter imageAdapter;
     private List<ImageModel> imageList;
-    private List<ImagePicModel> imagepicList;
-    private ImagePicAdapter imagepicAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,10 +65,6 @@ public class MyGalleryActivity extends AppCompatActivity {
         imageList = new ArrayList<>();
         imageAdapter = new ImageAdapter(imageList);
         recyclerViewList.setAdapter(imageAdapter);
-
-       /* imagepicList = new ArrayList<>();
-        imagepicAdapter = new ImagePicAdapter(imagepicList);
-        recyclerViewList.setAdapter(imagepicAdapter);*/
     }
 
     private void loadData() {
@@ -78,8 +72,6 @@ public class MyGalleryActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
         firestore = FirebaseFirestore.getInstance();
-        String memEmail = firebaseAuth.getCurrentUser().getEmail();
-        String safeEmail = memEmail != null ? memEmail.replace(".", ",") : "";
 
         String userId = FirebaseAuth.getInstance().getUid();
         Log.e("noAnswer", "userId     ---- > " + userId);
@@ -92,21 +84,21 @@ public class MyGalleryActivity extends AppCompatActivity {
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
+                        Log.d("TAG", task.toString());
                         imageList.clear();
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            // 문서에서 텍스트와 이미지 URL을 추출합니다.
+                            // 문서에서 텍스트와 이미지 URL을 추출
                             String date = document.getString("date");
                             String title = document.getString("title");
                             Boolean admin_check = document.getBoolean("admin_check");
                             String downloadurl = document.getString("downloadUrl");
-
                             Log.e("answer", "date : " +  date);
                             Log.e("answer", "title : " +  title);
                             Log.e("answer", "admin_check : " +  admin_check);
                             Log.e("answer", "downloadurl : " +  downloadurl);
                             Log.e("answer", "imageList : " +  imageList.toString());
 
-                            imageList.add(new ImageModel(title, date, admin_check,downloadurl));
+                            imageList.add(new ImageModel(title, date, admin_check, downloadurl));
                             Log.e("answer", "imageList : " +  imageList.toString());
                         }
                         // 어댑터에 데이터 변경 사항을 알립니다.
@@ -118,34 +110,5 @@ public class MyGalleryActivity extends AppCompatActivity {
                         Log.e("FirestoreError", "Error getting documents: ", task.getException());
                     }
                 });
-
-        /* DatabaseReference databaseReference = FirebaseDatabase.getInstance()
-                .getReference("memberInfo").child(safeEmail).child("imageInfo");
-
-        // Firebase Realtime Database에서 데이터 로드
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                imageList.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    ImageModel activity = snapshot.getValue(ImageModel.class);
-                    Log.e("noAnswer", "activity : " + activity);
-                    if (activity != null) {
-                        imageList.add(activity);
-                    } else {
-                        Log.e("noAnswer", "activity is null or imgURL is null");
-                    }
-                }
-
-                // 어댑터에 데이터 변경 사항을 알림
-                imageAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e("FirebaseError", databaseError.getMessage());
-            }
-        });*/
-
     }
 }

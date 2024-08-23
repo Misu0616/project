@@ -111,8 +111,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) { // 성공
-
                             Intent intent = new Intent(MainActivity.this, MyTreeActivity.class);
+                            intent.putExtra("EMAIL", emailT);
                             startActivity(intent);
                             Toast.makeText(MainActivity.this, "로그인되었습니다", Toast.LENGTH_SHORT).show();
                         } else { // 실패

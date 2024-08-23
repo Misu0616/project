@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +25,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
@@ -104,7 +107,7 @@ public class admin_AddList extends AppCompatActivity {
     }*/
 
         private FirebaseAuth firebaseAuth;
-        private FirebaseStorage firebaseStorage;
+        private FirebaseFirestore firebaseFirestore;
         private RecyclerView recyclerViewList;
         private AdminImageAdapter adminImageAdapter;
         private List<AdminImageModel> AdminImageList;
@@ -114,7 +117,7 @@ public class admin_AddList extends AppCompatActivity {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_admin_add_list);
 
-            Toast.makeText(getApplicationContext(), "toased", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "관리자 페이지", Toast.LENGTH_SHORT).show();
 
             // 하단 네비게이션 바
             Fragment underBar1 = new underBar();
@@ -138,46 +141,51 @@ public class admin_AddList extends AppCompatActivity {
             recyclerViewList.setAdapter(adminImageAdapter);
         }
 
+        // 파이어 스토어에서 회원 인증 내역 출력
         private void loadData() {
-            // Firebase 사용자 인증 초기화
+            
             firebaseAuth = FirebaseAuth.getInstance();
-            firebaseStorage = FirebaseStorage.getInstance();
-            String memEmail = firebaseAuth.getCurrentUser().getEmail();
-            String safeEmail = memEmail != null ? memEmail.replace(".", ",") : "";
+            firebaseFirestore = FirebaseFirestore.getInstance();
 
             String userId = FirebaseAuth.getInstance().getUid();
-            Log.e("noAnswer", "userId     ---- > " + userId);
+
             if (userId == null) {
-                Log.e("Firestore", "User ID is null");
+                Toast.makeText(getApplicationContext(), "User ID 가 없습니다", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            DatabaseReference databaseReference = FirebaseDatabase.getInstance()
-                    .getReference("memberInfo").child(safeEmail).child("imageInfo");
+            firebaseFirestore.collection(userId)
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            AdminImageList.clear();
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                
+                                String date = document.getString("date");
+                                String getUserId = document.getString("userId");
+                                String title = document.getString("title");
+                                Boolean admin_check = document.getBoolean("admin_check");
+                                String downloadurl = document.getString("downloadUrl");
+                                Log.d("answer1",  "document id : " + document.getId());
 
-            // Firebase Realtime Database에서 데이터 로드
-            databaseReference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    AdminImageList.clear();
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        AdminImageModel activity = snapshot.getValue(AdminImageModel.class);
-                        Log.e("noAnswer", "activity : " + activity);
-                        if (activity != null) {
-                            AdminImageList.add(activity);
+                                Log.e("answer", "date : " +  date);
+                                Log.e("answer", "title : " +  title);
+                                Log.e("answer", "admin_check : " +  admin_check);
+                                Log.e("answer", "downloadurl : " +  downloadurl);
+                                Log.e("answer", "getUserId : " +  getUserId);
+                                Log.e("answer", "imageList : " +  AdminImageList.toString());
+
+                                AdminImageList.add(new AdminImageModel(document.getId(), title, date, admin_check,downloadurl, getUserId));
+                                Log.e("answer", "imageList : " +  AdminImageList.toString());
+                            }
+                            
+                            adminImageAdapter.updateImageList(AdminImageList);
+
+                            Log.e("answer", "Error getting documents: " +  AdminImageList.toString());
+
                         } else {
-                            Log.e("noAnswer", "activity is null or imgURL is null");
+                            Log.e("FirestoreError", "Error getting documents: ", task.getException());
                         }
-                    }
-
-                    // 어댑터에 데이터 변경 사항을 알림
-                    adminImageAdapter.notifyDataSetChanged();
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Log.e("FirebaseError", databaseError.getMessage());
-                }
-            });
+                    });
     }
 }

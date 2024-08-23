@@ -25,6 +25,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -172,11 +178,13 @@ public class JoinActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            saveUserInfoToDatabase(email);
                             Intent intent = new Intent(JoinActivity.this, MyTreeActivity.class);
                             startActivity(intent);
                             finish();
                             Toast.makeText(JoinActivity.this, "회원 가입되셨습니다.\n" + id + "님 환영합니다", Toast.LENGTH_SHORT).show();
                         } else {
+                            Log.d("SignUp", "회원가입 안 됨?");
                             Toast.makeText(JoinActivity.this, "회원 가입에 실패했습니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -187,16 +195,61 @@ public class JoinActivity extends AppCompatActivity {
                 memberInfo memberInfo = new memberInfo(id, pwd, email);
                 String safeEmail = email.replace(".", ",");
 
-                databaseReference.child("memberInfo").child(safeEmail).setValue(memberInfo).addOnCompleteListener(task -> {
+               databaseReference.child("memberInfo").child(safeEmail).setValue(memberInfo).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
+                    } else {
+                    }
+                });
+                databaseReference.child("memberInfo").child(safeEmail).child("progressbar").setValue("0").addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("anssdf", "progressbar 열려라");
                     } else {
                     }
                 });
             }
 
+
+
         });
 
     }
+
+    private void saveUserInfoToDatabase(String email) {
+        // 현재 날짜 및 기준 날짜 계산
+        Calendar calendar = Calendar.getInstance();
+        Date initialDate = calendar.getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
+        String initialDateString = sdf.format(initialDate);
+
+        // d+1 코드 생성
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        Date futureDate = calendar.getTime();
+        String code = sdf.format(futureDate);
+
+        // 사용자 정보 및 기준 날짜와 코드 저장
+        Map<String, Object> dday = new HashMap<>();
+        dday.put("initialDate", initialDateString);
+        dday.put("registrationCode", code);
+
+        // Realtime Database에 사용자 정보 저장
+        databaseReference.child("memberInfo").child(email.replace(".", ",")).child("dayInfo").setValue(dday)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // 기준 날짜와 코드 저장
+                                    Log.d("SignUp", "기준 날짜와 코드 Realtime Database에 저장 성공");
+                                    Toast.makeText(JoinActivity.this, "회원가입 성공", Toast.LENGTH_SHORT).show();
+
+                                    Intent intent = new Intent(JoinActivity.this, MyTreeActivity.class);
+                                    startActivity(intent);
+
+                                    Log.w("SignUp", "Realtime Database에 기준 날짜와 코드 저장 실패");
+                                    Toast.makeText(JoinActivity.this, "회원가입 실패", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Log.w("SignUp", "Realtime Database에 사용자 정보 저장 실패", task.getException());
+                        Toast.makeText(JoinActivity.this, "회원가입 실패", Toast.LENGTH_SHORT).show();
+                    }
+                });
+}
 
     // 이메일 유효성 검사
     public boolean isValidEmail(String email) {

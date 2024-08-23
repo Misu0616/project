@@ -56,9 +56,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         }
 
         if (holder.titleList != null) {
-            String title = image.getTitle();
-            Log.d("ActivityAdapter", "Title value: " + title);
-
             switch(image.getTitle()) {
                 case "0": holder.titleList.setText("걷기");
                     break;

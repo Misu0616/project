@@ -55,7 +55,7 @@ public class underBar extends Fragment {
             @Override
             public void onClick(View view) {
                 Toast.makeText(getContext(), "gallery 페이지 성공", Toast.LENGTH_SHORT).show();
-                Intent gallery = new Intent(getActivity(), MyGalleryActivity.class);
+                Intent gallery = new Intent(getActivity(), admin_AddList.class);
                 gallery.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(gallery);
             }
