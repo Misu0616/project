@@ -50,6 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:background="#00FFFFFF"></com.google.android.material.bottomnavigation.BottomNavigationView>
+            android:background="#00FFFFFF">
+        </com.google.android.material.bottomnavigation.BottomNavigationView>
     </FrameLayout>
 </LinearLayout>

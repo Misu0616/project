@@ -1,6 +1,5 @@
 package com.jica.project;
 
-import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,19 +10,17 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
-    private List<ImageModel> imageList;
+public class AdminImageAdapter extends RecyclerView.Adapter<AdminImageAdapter.ViewHolder> {
+    private List<AdminImageModel> AdminImageList;
 
-    public ImageAdapter(List<ImageModel> imageList) {
-        this.imageList = imageList;
+    public AdminImageAdapter(List<AdminImageModel> AdminImageList) {
+        this.AdminImageList = AdminImageList;
+        notifyDataSetChanged();
     }
     @NonNull
     @Override
@@ -35,16 +32,16 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        ImageModel image = imageList.get(position);
+        AdminImageModel image = AdminImageList.get(position);
 
     // 이미지가 있을 경우 Glide를 사용하여 로드
-          if (image.getDownloadurl() != null && !image.getDownloadurl().isEmpty()) {
+          /*  if (image.getImgURL() != null && !image.getImgURL().isEmpty()) {
                 Glide.with(holder.imageView.getContext())
-                        .load(image.getDownloadurl())
+                        .load(image.getImgURL())
                         .into(holder.imageView);
             } else {
                 holder.imageView.setImageResource(android.R.color.transparent); // 이미지가 없을 경우 투명하게 설정
-            }
+            }*/
 
         if (holder.datelist != null) {
             Date now = new Date();
@@ -56,9 +53,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         }
 
         if (holder.titleList != null) {
-            String title = image.getTitle();
-            Log.d("ActivityAdapter", "Title value: " + title);
-
             switch(image.getTitle()) {
                 case "0": holder.titleList.setText("걷기");
                     break;
@@ -96,13 +90,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
 
     @Override
     public int getItemCount() {
-        return imageList.size();
-    }
-
-    // 데이터 리스트 업데이트 메서드 추가
-    public void updateData(List<ImageModel> newImageList) {
-        this.imageList = new ArrayList<>(newImageList);
-        notifyDataSetChanged();
+        return AdminImageList.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -121,5 +109,11 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
 
         }
 
+    }
+    // 데이터 리스트 업데이트 메서드 추가 ?
+    public void updateImageList(List<AdminImageModel> newImageList) {
+        this.AdminImageList.clear();
+        this.AdminImageList.addAll(newImageList);
+        notifyDataSetChanged();
     }
 }

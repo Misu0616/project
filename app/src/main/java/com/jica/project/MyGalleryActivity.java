@@ -2,6 +2,7 @@ package com.jica.project;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,6 +34,7 @@ public class MyGalleryActivity extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
     private FirebaseStorage firebaseStorage;
+    private FirebaseFirestore firestore;
     private RecyclerView recyclerViewList;
     private ImageAdapter imageAdapter;
     private List<ImageModel> imageList;
@@ -43,6 +45,10 @@ public class MyGalleryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_gallery);
+
+        // 하단 네비게이션 바
+        Fragment underBar1 = new underBar();
+        getSupportFragmentManager().beginTransaction().replace(R.id.galleryUnderbar, underBar1).commit();
 
         // RecyclerView 초기화
         initRecyclerViews();
@@ -71,6 +77,7 @@ public class MyGalleryActivity extends AppCompatActivity {
         // Firebase 사용자 인증 초기화
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
+        firestore = FirebaseFirestore.getInstance();
         String memEmail = firebaseAuth.getCurrentUser().getEmail();
         String safeEmail = memEmail != null ? memEmail.replace(".", ",") : "";
 
@@ -81,7 +88,38 @@ public class MyGalleryActivity extends AppCompatActivity {
             return;
         }
 
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+        firestore.collection(userId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        imageList.clear();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            // 문서에서 텍스트와 이미지 URL을 추출합니다.
+                            String date = document.getString("date");
+                            String title = document.getString("title");
+                            Boolean admin_check = document.getBoolean("admin_check");
+                            String downloadurl = document.getString("downloadUrl");
+
+                            Log.e("answer", "date : " +  date);
+                            Log.e("answer", "title : " +  title);
+                            Log.e("answer", "admin_check : " +  admin_check);
+                            Log.e("answer", "downloadurl : " +  downloadurl);
+                            Log.e("answer", "imageList : " +  imageList.toString());
+
+                            imageList.add(new ImageModel(date,title,admin_check,downloadurl));
+                            Log.e("answer", "imageList : " +  imageList.toString());
+                        }
+                        // 어댑터에 데이터 변경 사항을 알립니다.
+                        imageAdapter.updateData(imageList);
+
+                        Log.e("answer", "Error getting documents: " +  imageList.toString());
+
+                    } else {
+                        Log.e("FirestoreError", "Error getting documents: ", task.getException());
+                    }
+                });
+
+        /* DatabaseReference databaseReference = FirebaseDatabase.getInstance()
                 .getReference("memberInfo").child(safeEmail).child("imageInfo");
 
         // Firebase Realtime Database에서 데이터 로드
@@ -107,7 +145,7 @@ public class MyGalleryActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.e("FirebaseError", databaseError.getMessage());
             }
-        });
+        });*/
 
     }
 }

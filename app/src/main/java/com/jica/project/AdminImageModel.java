@@ -1,32 +1,16 @@
 package com.jica.project;
 
-import android.util.Log;
-
-import androidx.annotation.NonNull;
-
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class ImageModel {
+public class AdminImageModel {
     private String title;
     private String date;
     private boolean admin_check;
-    private String downloadurl;
 
-    public ImageModel() {
+    public AdminImageModel() {
     }
-    public ImageModel(String title, String date, boolean admin_check, String downloadurl) {
+    public AdminImageModel(String title, String date, boolean admin_check) {
         this.title = title;
         this.date = date;
         this.admin_check = admin_check;
-        this.downloadurl = downloadurl;
     }
 
     public String getTitle() {
@@ -51,14 +35,6 @@ public class ImageModel {
 
     public void setAdmin_check(boolean admin_check) {
         this.admin_check = admin_check;
-    }
-
-    public String getDownloadurl() {
-        return downloadurl;
-    }
-
-    public void setDownloadurl(String downloadurl) {
-        this.downloadurl = downloadurl;
     }
 
     @Override

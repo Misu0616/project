@@ -81,7 +81,7 @@ public class RealCameraActivity extends AppCompatActivity {
                             imageView.setImageBitmap(rotatedBitmap);
                             imageView.setVisibility(View.VISIBLE);
                             uploadImageToFirebase(rotatedBitmap);
-                            uploadImageToFirebaseStorage(imageUri);
+                            //uploadImageToFirebaseStorage(imageUri);
 
                         } else {
                             Log.e("ImageError", "Bitmap is null");
@@ -239,9 +239,23 @@ public class RealCameraActivity extends AppCompatActivity {
                     .addOnFailureListener(exception -> {
                         Toast.makeText(RealCameraActivity.this, "업로드 실패", Toast.LENGTH_SHORT).show();
                     });
+            StorageReference imageRef = storageRef.child(userId).child(fileName);
+
+            imageRef.putFile(imageUri)
+                    .addOnSuccessListener(taskSnapshot -> {
+                        imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                            String downloadUrl = uri.toString();
+                            saveImageInfoToFirestore(String.valueOf(position), timeStamp, Boolean.valueOf("false"), fileName, downloadUrl);
+                        }).addOnFailureListener(exception -> {
+                            Log.e("FirebaseStorage", "Error getting download URL", exception);
+                        });
+                    })
+                    .addOnFailureListener(exception -> {
+                        Log.e("FirebaseStorage", "Upload failed", exception);
+                    });
         }
     }
-    private void uploadImageToFirebaseStorage(Uri imageUri) {
+   /* private void uploadImageToFirebaseStorage(Uri imageUri) {
         if (imageUri == null) {
             Log.e("FirebaseStorage", "Uri is null");
             Toast.makeText(this, "사진의 Uri가 null입니다.", Toast.LENGTH_SHORT).show();
@@ -267,7 +281,7 @@ public class RealCameraActivity extends AppCompatActivity {
                 .addOnSuccessListener(taskSnapshot -> {
                     imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                         String downloadUrl = uri.toString();
-                        saveImageInfoToFirestore(fileName, downloadUrl);
+                        saveImageInfoToFirestore(String title, String date, Boolean admin_check, fileName, downloadUrl);
                     }).addOnFailureListener(exception -> {
                         Log.e("FirebaseStorage", "Error getting download URL", exception);
                     });
@@ -276,17 +290,19 @@ public class RealCameraActivity extends AppCompatActivity {
                     Log.e("FirebaseStorage", "Upload failed", exception);
                 });
     }
+*/
 
-
-    private void saveImageInfoToFirestore(String fileName, String downloadUrl) {
+    private void saveImageInfoToFirestore(String title, String date, Boolean admin_check, String fileName, String downloadUrl) {
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         String userId = FirebaseAuth.getInstance().getUid();
         CollectionReference imagesRef = firestore.collection(userId);
 
         Map<String, Object> imageInfo = new HashMap<>();
+        imageInfo.put("title", title);
+        imageInfo.put("date", date);
+        imageInfo.put("admin_check", admin_check);
         imageInfo.put("fileName", fileName);
         imageInfo.put("downloadUrl", downloadUrl);
-        imageInfo.put("timestamp", FieldValue.serverTimestamp());
 
         imagesRef.add(imageInfo)
                 .addOnSuccessListener(documentReference -> {

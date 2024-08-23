@@ -27,7 +27,7 @@
         android:padding="7sp"
         android:text="최신순" />
 
-    <FrameLayout
+  <!--  <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -38,7 +38,12 @@
             android:numColumns="2"
             android:verticalSpacing="30dp" />
 
-    </FrameLayout>
+    </FrameLayout>-->
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/adminRecycle"
+        android:layout_width="wrap_content"
+        android:layout_height="450sp" />
 
     <FrameLayout
         android:id="@+id/galleryUnderbar"
