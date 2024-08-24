@@ -54,16 +54,24 @@ public class MainActivity extends AppCompatActivity {
 
         // 자동 로그인
         if (firebaseAuth.getCurrentUser() != null) {
-            Toast.makeText(MainActivity.this, "자동 로그인되었습니다", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(MainActivity.this, MyTreeActivity.class);
-            startActivity(intent);
-            finish();
-
+            if (firebaseAuth.getCurrentUser().getEmail().toString().equals("admin@naver.com")) {
+                Toast.makeText(MainActivity.this, "관리자 페이지 로그인", Toast.LENGTH_SHORT).show();
+                Log.d("hihihihi", "member Login111 : " + firebaseAuth.getCurrentUser().getEmail());
+                Intent intent2 = new Intent(MainActivity.this, admin_AddList.class);
+                startActivity(intent2);
+                finish();
+            } else {
+                Toast.makeText(MainActivity.this, "자동 로그인되었습니다", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this, MyTreeActivity.class);
+                startActivity(intent);
+                finish();
+            }
             // 환경 보호 활동 인증하기 위한 이메일 정보 전달
             SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString("USER_EMAIL", firebaseAuth.getCurrentUser().getEmail());
             editor.apply();
+
         }
 
         // 로그인 버튼
@@ -73,7 +81,9 @@ public class MainActivity extends AppCompatActivity {
                 String email = emailT.getText().toString();
                 String memId = pwT.getText().toString();
 
+                Log.d("hihihihi", "member Login222 : " + firebaseAuth.getCurrentUser().getEmail());
                 Login(email, memId);
+
             }
         });
 
@@ -110,7 +120,15 @@ public class MainActivity extends AppCompatActivity {
                 .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) { // 성공
+                        if (task.isSuccessful()) {
+                            if (firebaseAuth.getCurrentUser().getEmail().toString().equals("admin@naver.com")) {
+                                Log.d("hihihihi", "member Login333 : " + firebaseAuth.getCurrentUser().getEmail());
+                                Toast.makeText(MainActivity.this, "관리자 페이지 로그인", Toast.LENGTH_SHORT).show();
+                                Intent intent2 = new Intent(MainActivity.this, admin_AddList.class);
+                                startActivity(intent2);
+                                finish();
+                            }
+
                             Intent intent = new Intent(MainActivity.this, MyTreeActivity.class);
                             intent.putExtra("EMAIL", emailT);
                             startActivity(intent);
