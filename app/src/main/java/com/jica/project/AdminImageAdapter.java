@@ -164,22 +164,55 @@ public class AdminImageAdapter extends RecyclerView.Adapter<AdminImageAdapter.Vi
 
     private void progressbar() {
 
-        databaseReference = FirebaseDatabase.getInstance().getReference("memberInfo").child((firebaseAuth.getCurrentUser().getEmail().replace(".", ",")));
+        databaseReference = FirebaseDatabase.getInstance().getReference("memberInfo").child("cyniaa@naver,com");
 
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        // 데이터 변경 리스너 추가
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                // Firebase에서 가져온 프로그레스 바 정보 표시하기
-                String progressNum = dataSnapshot.child("progressbar").getValue(String.class);
+                // 현재 progressbar 값 가져오기
+                String progressNumStr = dataSnapshot.child("progressbar").getValue(String.class);
+                int progressNum;
 
+                if (progressNumStr != null) {
+                    try {
+                        // progressNum 값을 정수로 변환
+                        progressNum = Integer.parseInt(progressNumStr);
+                    } catch (NumberFormatException e) {
+                        // 숫자로 변환할 수 없는 경우 기본값 0으로 설정
+                        progressNum = 0;
+                    }
+                } else {
+                    // progressNum 값이 없는 경우 기본값 0으로 설정
+                    progressNum = 0;
+                }
+
+                // progressNum 값을 5씩 증가
+                progressNum += 5;
+                if(progressNum == 100){
+                    progressNum = 0;
+                    // 사진 바꾸는 기능 추가하기 + level 글씨 바꾸기를 어느 페이지에서 해야 할까...?
+                }
+
+                // Firebase에 업데이트
+                int finalProgressNum = progressNum;
+                databaseReference.child("progressbar").setValue(String.valueOf(progressNum))
+                        .addOnSuccessListener(aVoid -> {
+                            // 업데이트 성공 시 로그
+                            Log.d("progress", "Successfully updated progressbar to: " + finalProgressNum);
+                        })
+                        .addOnFailureListener(e -> {
+                            // 업데이트 실패 시 로그
+                            Log.w("progress", "Failed to update progressbar", e);
+                        });
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // 데이터 읽기 오류 처리
+                Log.w("progress", "Failed to read progressbar value.", databaseError.toException());
             }
         });
-
     }
 
     @Override
