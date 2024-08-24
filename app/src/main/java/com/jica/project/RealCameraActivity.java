@@ -250,7 +250,7 @@ public class RealCameraActivity extends AppCompatActivity {
                     .addOnSuccessListener(taskSnapshot -> {
                         imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                             String downloadUrl = uri.toString();
-                            saveImageInfoToFirestore(String.valueOf(position), timeStamp, Boolean.valueOf("false"), fileName, downloadUrl);
+                            saveImageInfoToFirestore(String.valueOf(position), timeStamp, Boolean.valueOf("false"), fileName, downloadUrl, firebaseAuth.getCurrentUser().getUid());
                         }).addOnFailureListener(exception -> {
                             Log.e("FirebaseStorage", "Error getting download URL", exception);
                         });
@@ -261,7 +261,7 @@ public class RealCameraActivity extends AppCompatActivity {
         }
     }
 
-    private void saveImageInfoToFirestore(String title, String date, Boolean admin_check, String fileName, String downloadUrl) {
+    private void saveImageInfoToFirestore(String title, String date, Boolean admin_check, String fileName, String downloadUrl, String userId) {
 
         CollectionReference imagesRef = firestore.collection(userId);
 
@@ -271,6 +271,7 @@ public class RealCameraActivity extends AppCompatActivity {
         imageInfo.put("admin_check", admin_check);
         imageInfo.put("fileName", fileName);
         imageInfo.put("downloadUrl", downloadUrl);
+        imageInfo.put("userId", firebaseAuth.getCurrentUser().getUid());
 
         imagesRef.add(imageInfo)
                 .addOnSuccessListener(documentReference -> {

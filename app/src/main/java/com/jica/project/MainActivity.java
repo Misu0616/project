@@ -81,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
                 String email = emailT.getText().toString();
                 String memId = pwT.getText().toString();
 
-                Log.d("hihihihi", "member Login222 : " + firebaseAuth.getCurrentUser().getEmail());
                 Login(email, memId);
 
             }
@@ -127,12 +126,12 @@ public class MainActivity extends AppCompatActivity {
                                 Intent intent2 = new Intent(MainActivity.this, admin_AddList.class);
                                 startActivity(intent2);
                                 finish();
+                            } else {
+                                Intent intent = new Intent(MainActivity.this, MyTreeActivity.class);
+                                intent.putExtra("EMAIL", emailT);
+                                startActivity(intent);
+                                Toast.makeText(MainActivity.this, "로그인되었습니다", Toast.LENGTH_SHORT).show();
                             }
-
-                            Intent intent = new Intent(MainActivity.this, MyTreeActivity.class);
-                            intent.putExtra("EMAIL", emailT);
-                            startActivity(intent);
-                            Toast.makeText(MainActivity.this, "로그인되었습니다", Toast.LENGTH_SHORT).show();
                         } else { // 실패
                             Toast.makeText(MainActivity.this, "입력하신 정보를 다시 확인해주세요", Toast.LENGTH_SHORT).show();
                         }

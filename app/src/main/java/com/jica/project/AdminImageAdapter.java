@@ -72,6 +72,12 @@ public class AdminImageAdapter extends RecyclerView.Adapter<AdminImageAdapter.Vi
             Log.e("ActivityAdapter", "datelist is null");
         }
 
+        if (holder.userName != null) {
+            holder.userName.setText(image.getUserID());
+        } else {
+            Log.e("ActivityAdapter", "datelist is null");
+        }
+
         if (holder.titleList != null) {
             switch(image.getTitle()) {
                 case "0": holder.titleList.setText("걷기");
@@ -112,43 +118,43 @@ public class AdminImageAdapter extends RecyclerView.Adapter<AdminImageAdapter.Vi
 
         List<String> documentIds = new ArrayList<>();
 
-        firestore.collection(userId)
+        firestore.collection("hT20GF9j8AW05aWLPgGUpOUgsgh1")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         documentIds.clear(); // 기존 리스트를 비웁니다
                         for (DocumentSnapshot document : task.getResult().getDocuments()) {
                             String documentId = document.getId();
-                            documentIds.add(documentId);
+                            documentIds.add("hT20GF9j8AW05aWLPgGUpOUgsgh1");
                             Log.d("answer123", "document id : " + documentId);
+
+                            // CheckBox 클릭 리스너 설정
+                            holder.admin_checkbox.setOnClickListener(view -> {
+                                boolean newCheckStatus = !image.isAdmin_check();
+                                holder.adminCheck.setText(newCheckStatus ? "인증 완료" : "인증 확인 중");
+
+                                image.setAdmin_check(newCheckStatus);
+
+                                // 문서 ID를 통해 Firestore 문서 업데이트
+                                if (!documentIds.isEmpty()) {
+                                    for(int i=0; i<documentIds.size(); i++) {
+                                        //String documentId = documentIds.get(i);
+                                        Log.d("checkthing", "document 객체 : " + documentIds);
+                                        Log.d("checkthing", "documentIds.size 객체 : " + documentIds.size());
+                                        Log.d("checkthing", "documentId: " + documentId);
+                                        firestore.collection("hT20GF9j8AW05aWLPgGUpOUgsgh1")
+                                                .document(documentId) // 문서 ID로 문서 참조
+                                                .update("admin_check", newCheckStatus)
+                                                .addOnSuccessListener(aVoid -> {
+                                                    Log.d("AdminImageAdapter", "DocumentSnapshot successfully updated!");
+                                                })
+                                                .addOnFailureListener(e ->
+                                                        Log.w("AdminImageAdapter", "Error updating document", e));
+                                    }
+                                }
+                                progressbar();
+                            });
                         }
-
-                        // CheckBox 클릭 리스너 설정
-                        holder.admin_checkbox.setOnClickListener(view -> {
-                            boolean newCheckStatus = !image.isAdmin_check();
-                            holder.adminCheck.setText(newCheckStatus ? "인증 완료" : "인증 확인 중");
-
-                            image.setAdmin_check(newCheckStatus);
-
-                            // 문서 ID를 통해 Firestore 문서 업데이트
-                            for (String documentId : documentIds) {
-                                Log.d("answer1243 : ", "happy ----------" + documentIds);
-                                // 조건에 맞는 문서 ID 찾기 (예: image.getSomeField()와 비교)
-                                    firestore.collection(userId)
-                                            .document(documentIds.toString()) // 문서 ID로 문서 참조
-                                            .update("admin_check", newCheckStatus)
-                                            .addOnSuccessListener(aVoid -> {
-                                                Log.d("AdminImageAdapter", "DocumentSnapshot successfully updated!");
-                                            })
-                                            .addOnFailureListener(e ->
-                                                    Log.w("AdminImageAdapter", "Error updating document", e));
-                                    break;
-
-                            }
-                            // 파이어베이스에 프로그레스바 숫자 추가하기 400점 만점으로 해서 나누기 계산 만들면 될 듯
-                            // 몽땅 출력해 그리고 일괄적으로 버튼을 눌러
-                            progressbar();
-                        });
 
                     } else {
                         Log.e("FirestoreError", "Error getting documents: ", task.getException());

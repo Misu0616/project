@@ -28,6 +28,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -35,6 +36,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class admin_AddList extends AppCompatActivity {
@@ -80,83 +82,6 @@ public class admin_AddList extends AppCompatActivity {
             adminImageAdapter = new AdminImageAdapter(AdminImageList);
             recyclerViewList.setAdapter(adminImageAdapter);
         }
-/*
-    public void listAllCollections() {
-        firebaseFirestore.listCollections()
-                .addOnCompleteListener(new OnCompleteListener<List<CollectionReference>>() {
-                    @Override
-                    public void onComplete(@NonNull Task<List<CollectionReference>> task) {
-                        if (task.isSuccessful()) {
-                            List<CollectionReference> collections = task.getResult();
-                            if (collections != null) {
-                                for (CollectionReference collection : collections) {
-                                    Log.d("TAG, ", "Collection: " + collection.getId());
-                                    listDocumentsInCollection(collection);
-                                    listSubcollections(collection);
-                                }
-                            }
-                        } else {
-                            Log.w("TAG, ", "Error getting collections.", task.getException());
-                        }
-                    }
-                });
-    }
-
-    private void listDocumentsInCollection(CollectionReference collection) {
-        collection.get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            QuerySnapshot snapshot = task.getResult();
-                            if (snapshot != null) {
-                                for (DocumentSnapshot doc : snapshot.getDocuments()) {
-                                    Log.d("TAG, ", "  Document: " + doc.getId());
-                                    // Optionally, print document data
-                                    // Log.d(TAG, "    Data: " + doc.getData());
-                                }
-                            }
-                        } else {
-                            Log.w("TAG, ", "Error getting documents.", task.getException());
-                        }
-                    }
-                });
-    }
-
-    private void listSubcollections(CollectionReference collection) {
-        collection.get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            QuerySnapshot snapshot = task.getResult();
-                            if (snapshot != null) {
-                                for (DocumentSnapshot doc : snapshot.getDocuments()) {
-                                    doc.getReference().listCollections()
-                                            .addOnCompleteListener(new OnCompleteListener<List<CollectionReference>>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<List<CollectionReference>> task) {
-                                                    if (task.isSuccessful()) {
-                                                        List<CollectionReference> subcollections = task.getResult();
-                                                        if (subcollections != null) {
-                                                            for (CollectionReference subcollection : subcollections) {
-                                                                Log.d("TAG, ",    "Subcollection: " + subcollection.getId());
-                                                                listDocumentsInCollection(subcollection);
-                                                                listSubcollections(subcollection);
-                                                            }
-                                                        }
-                                                    } else {
-                                                        Log.w("TAG, ", "Error getting subcollections.", task.getException());
-                                                    }
-                                                }
-                                            });
-                                }
-                            }
-                        } else {
-                            Log.w("TAG, ", "Error getting documents.", task.getException());
-                        }
-                    }
-                });*/
 
         // 파이어 스토어에서 회원 인증 내역 출력
        private void loadData() {
@@ -171,39 +96,44 @@ public class admin_AddList extends AppCompatActivity {
                 return;
             }
 
-            firebaseFirestore.collection(userId)
-                    .get()
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            AdminImageList.clear();
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                
-                                String date = document.getString("date");
-                                String getUserId = document.getString("userId");
-                                String title = document.getString("title");
-                                Boolean admin_check = document.getBoolean("admin_check");
-                                String downloadurl = document.getString("downloadUrl");
-                                Log.d("answer1",  "document id : " + document.getId());
+           List<String> collectionNames = new ArrayList<>();
+           Collections.addAll(collectionNames,
+                   "mlV0XBUHPpVa6zyIE7rYzGieNwp1",
+                   "hT20GF9j8AW05aWLPgGUpOUgsgh1");
 
-                                Log.e("answer", "date : " +  date);
-                                Log.e("answer", "title : " +  title);
-                                Log.e("answer", "admin_check : " +  admin_check);
-                                Log.e("answer", "downloadurl : " +  downloadurl);
-                                Log.e("answer", "getUserId : " +  getUserId);
-                                Log.e("answer", "imageList : " +  AdminImageList.toString());
+           AdminImageList.clear();
+           for (String collectionName : collectionNames) {
+               firebaseFirestore.collection(collectionName)
+                       .get()
+                       .addOnCompleteListener(task -> {
+                           if (task.isSuccessful()) {
+                               for (QueryDocumentSnapshot document : task.getResult()) {
 
-                                AdminImageList.add(new AdminImageModel(document.getId(), title, date, admin_check,downloadurl, getUserId));
-                                Log.e("answer", "imageList : " +  AdminImageList.toString());
-                            }
-                            
-                            adminImageAdapter.updateImageList(AdminImageList);
+                                   String date = document.getString("date");
+                                   String getUserId = document.getString("userId");
+                                   String title = document.getString("title");
+                                   Boolean admin_check = document.getBoolean("admin_check");
+                                   String downloadurl = document.getString("downloadUrl");
+                                   Log.d("answer1", "document id : " + document.getId());
 
-                            Log.e("answer", "Error getting documents: " +  AdminImageList.toString());
+                                   Log.e("answer", "date : " + date);
+                                   Log.e("answer", "title : " + title);
+                                   Log.e("answer", "admin_check : " + admin_check);
+                                   Log.e("answer", "downloadurl : " + downloadurl);
+                                   Log.e("answer", "getUserId : " + getUserId);
+                                   Log.e("answer", "imageList : " + AdminImageList.toString());
 
-                        } else {
-                            Log.e("FirestoreError", "Error getting documents: ", task.getException());
-                        }
-                    });
+                                   AdminImageList.add(new AdminImageModel(document.getId(), title, date, admin_check, downloadurl, getUserId));
+                                   Log.e("answer", "AdminImageList : " + AdminImageList.toString());
+                               }
 
+                               adminImageAdapter.updateImageList(AdminImageList);
+
+                           } else {
+                               Log.e("FirestoreError", "Error getting documents: ", task.getException());
+                           }
+                       });
+           }
     }
+
 }

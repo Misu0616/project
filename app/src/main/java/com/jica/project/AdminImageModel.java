@@ -67,8 +67,8 @@ public class AdminImageModel {
                 "title='" + title + '\'' +
                 ", date='" + date + '\'' +
                 ", admin_check=" + admin_check +'\'' +
-                ", admin_check=" + downloadurl +'\'' +
-                ", admin_check=" + userID +'\'' +
+                ", downloadurl=" + downloadurl +'\'' +
+                ", userID=" + userID +'\'' +
                 '}';
     }
 }
