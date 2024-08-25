@@ -15,53 +15,53 @@ import androidx.fragment.app.Fragment;
 import com.google.firebase.auth.FirebaseAuth;
 
 
-public class adminUnderBar extends Fragment {
-    ImageButton btncamera, btnHome, btnGallery, btnSetting;
+public class AdminUnderBar extends Fragment {
+    ImageButton btnAdminList, btnAdminAdd, btnLogout, btnActivityList;
     private FirebaseAuth firebaseAuth;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View underbar =  inflater.inflate(R.layout.fragment_under_menu, container, false);
+        View underbar =  inflater.inflate(R.layout.fragment_admin_under_menu, container, false);
 
 
-        btncamera = (ImageButton) underbar.findViewById(R.id.camerabtn);
-        btnHome = (ImageButton) underbar.findViewById(R.id.homebtn);
-        btnGallery = (ImageButton) underbar.findViewById(R.id.gallerybtn);
-        btnSetting = (ImageButton) underbar.findViewById(R.id.settingbtn);
+        btnAdminList = (ImageButton) underbar.findViewById(R.id.adminList);
+        btnAdminAdd = (ImageButton) underbar.findViewById(R.id.adminAdd);
+        btnActivityList = (ImageButton) underbar.findViewById(R.id.adminActivityList);
+        btnLogout = (ImageButton) underbar.findViewById(R.id.logout);
 
-        btncamera.setOnClickListener(new View.OnClickListener() {
+        btnAdminList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(getContext(), "camera 페이지 성공", Toast.LENGTH_SHORT).show();
-                Intent camera = new Intent(getActivity(), SearchListActivity.class);
+                Intent camera = new Intent(getActivity(), addmin_addProtectThing.class);
                 camera.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(camera);
             }
         });
 
-        btnHome.setOnClickListener(new View.OnClickListener() {
+        btnAdminAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(getContext(), "home 페이지 성공", Toast.LENGTH_SHORT).show();
-                Intent home = new Intent(getActivity(), MyTreeActivity.class);
+                Intent home = new Intent(getActivity(), admin_AddList.class);
                 home.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(home);
             }
         });
 
-        btnGallery.setOnClickListener(new View.OnClickListener() {
+        btnActivityList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getContext(), "gallery 페이지 성공", Toast.LENGTH_SHORT).show();
-                Intent gallery = new Intent(getActivity(), admin_AddList.class);
+                // 얘는 무슨 페이지로 할지 보류
+                Intent gallery = new Intent(getActivity(), AdminSearchListActivity.class);
                 gallery.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(gallery);
             }
         });
 
         firebaseAuth = FirebaseAuth.getInstance();
-        btnSetting.setOnClickListener(new View.OnClickListener() {
+        btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // 로그아웃

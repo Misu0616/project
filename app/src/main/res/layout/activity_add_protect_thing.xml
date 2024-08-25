@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
+    android:background="#ECE7DB"
+    android:gravity="center_horizontal"
     android:orientation="vertical"
     tools:context=".addmin_addProtectThing">
 
@@ -11,14 +13,30 @@
         android:id="@+id/addActivity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="20dp"
         android:ems="10"
         android:hint="활동을 추가해주세요"
         android:inputType="text" />
 
-    <Button
+    <android.widget.Button
         android:id="@+id/btnAddActivity"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="활동 추가" />
+        android:background="@drawable/loginbtn"
+        android:text="활동 추가"
+        android:textAppearance="@style/login"
+        android:textSize="20dp" />
+
+    <FrameLayout
+        android:id="@+id/addProtect"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="#00FFFFFF"/>
+    </FrameLayout>
 
 </LinearLayout>

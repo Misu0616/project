@@ -43,13 +43,19 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
         return activityList.size();
     }
 
+    public void updateActivityList(List<ActivityModel> newList) {
+        this.activityList = newList;
+        notifyDataSetChanged(); // RecyclerView에 데이터 변경 알리기
+    }
+
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public static final String POSITION_KEY = "position_key";
         TextView activityTextView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            activityTextView = itemView.findViewById(R.id.textView2);
+            activityTextView = itemView.findViewById(R.id.adminAddActivity);
 
             activityTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -81,4 +87,6 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
         }
 
     }
+
+
 }

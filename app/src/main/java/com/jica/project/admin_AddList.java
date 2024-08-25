@@ -55,8 +55,8 @@ public class admin_AddList extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "관리자 페이지", Toast.LENGTH_SHORT).show();
 
             // 하단 네비게이션 바
-            Fragment underBar1 = new underBar();
-            getSupportFragmentManager().beginTransaction().replace(R.id.galleryUnderbar, underBar1).commit();
+            Fragment adminUnderBar = new AdminUnderBar();
+            getSupportFragmentManager().beginTransaction().replace(R.id.galleryUnderbar, adminUnderBar).commit();
 
             // RecyclerView 초기화
             initRecyclerViews();

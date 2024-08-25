@@ -1,6 +1,7 @@
 package com.jica.project;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,12 +31,17 @@ public class addmin_addProtectThing extends AppCompatActivity {
 
         btnAddActivity = findViewById(R.id.btnAddActivity);
         addActivityT = findViewById(R.id.addActivity);
+
+        // 하단 네비게이션 바
+        Fragment adminUnderBar = new AdminUnderBar();
+        getSupportFragmentManager().beginTransaction().replace(R.id.addProtect, adminUnderBar).commit();
+
         btnAddActivity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 addActivities(addActivityT.getText().toString());
 
-                Intent intent = new Intent(getApplicationContext(), SearchListActivity.class);
+                Intent intent = new Intent(getApplicationContext(), AdminSearchListActivity.class);
                 startActivity(intent);
             }
         });

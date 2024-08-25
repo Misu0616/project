@@ -59,6 +59,9 @@
             android:name=".SearchListActivity"
             android:exported="false" />
         <activity
+            android:name=".AdminSearchListActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

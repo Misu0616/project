@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ECE7DB"
-    android:orientation="vertical"
-    tools:context=".SearchListActivity">
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -17,7 +15,7 @@
         android:orientation="horizontal">
 
         <ImageButton
-            android:id="@+id/search"
+            android:id="@+id/admin_search"
             android:layout_width="40sp"
             android:layout_height="40sp"
             android:layout_marginLeft="5sp"
@@ -25,7 +23,7 @@
             android:src="@drawable/search" />
 
         <EditText
-            android:id="@+id/searchWord"
+            android:id="@+id/admin_searchWord"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
@@ -35,18 +33,18 @@
             android:background="@null"
             android:hint="검색어를 입력해주세요"
             android:textAppearance="@style/search"
-            android:textColorHint="#ffffff" />
+            android:textColorHint="#ffffff"  />
 
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/showList"
+        android:id="@+id/admin_recycle"
         android:layout_width="match_parent"
         android:layout_height="480dp"
         android:background="#80F1F1F1" />
 
     <FrameLayout
-        android:id="@+id/underbarSearch"
+        android:id="@+id/admin_activity_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -54,9 +52,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:background="#00FFFFFF">
-
-        </com.google.android.material.bottomnavigation.BottomNavigationView>
+            android:background="#00FFFFFF"/>
     </FrameLayout>
-
 </LinearLayout>

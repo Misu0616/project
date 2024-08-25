@@ -4,13 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -20,17 +18,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 public class MyTreeActivity extends AppCompatActivity {
 
-        TextView dday;
-        ImageView seedPic;
-        ProgressBar level;
+        TextView dday, levelNum;
+        ProgressBar levelbar;
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference databaseReference = database.getReference();
         FirebaseAuth firebaseAuth;
@@ -44,9 +38,9 @@ public class MyTreeActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction().replace(R.id.galleryUnderbar, underBar1).commit();
 
             dday = findViewById(R.id.dday);
-            level = findViewById(R.id.levelUp);
-            int progress = level.getProgress();
-            level.setProgress(progress);
+            levelbar = findViewById(R.id.levelBar);
+            int progress = levelbar.getProgress();
+            levelbar.setProgress(progress);
 
             firebaseAuth = FirebaseAuth.getInstance();
 
@@ -65,26 +59,29 @@ public class MyTreeActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 // Firebase에서 가져온 프로그레스 바 정보 표시하기
                 String levelStr = dataSnapshot.child("level").getValue(String.class);
-
-                int intLevel = Integer.parseInt(levelStr); // 기본 레벨값
+                int intLevel = Integer.parseInt(levelStr);
+                levelNum = findViewById(R.id.level);
 
                 // 레벨에 따라 이미지 변경
                 ImageView seedPic = findViewById(R.id.seed);
                 switch (intLevel) {
                     case 1:
+                        levelNum.setText("1");
                         seedPic.setImageResource(R.drawable.level_seed);
                         break;
                     case 2:
+                        levelNum.setText("2");
                         seedPic.setImageResource(R.drawable.level_seed2);
                         break;
                     case 3:
+                        levelNum.setText("3");
                         seedPic.setImageResource(R.drawable.level_seed3);
                         break;
                     case 4:
+                        levelNum.setText("4");
                         seedPic.setImageResource(R.drawable.level_seed4);
                         break;
                     default:
-                        // 기본 이미지 또는 예외 처리
                         seedPic.setImageResource(R.drawable.level_seed);
                         break;
                 }

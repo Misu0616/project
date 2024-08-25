@@ -34,7 +34,6 @@ public class underBar extends Fragment {
         btncamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getContext(), "camera 페이지 성공", Toast.LENGTH_SHORT).show();
                 Intent camera = new Intent(getActivity(), SearchListActivity.class);
                 camera.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(camera);
@@ -44,7 +43,6 @@ public class underBar extends Fragment {
         btnHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getContext(), "home 페이지 성공", Toast.LENGTH_SHORT).show();
                 Intent home = new Intent(getActivity(), MyTreeActivity.class);
                 home.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(home);
@@ -54,8 +52,7 @@ public class underBar extends Fragment {
         btnGallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getContext(), "gallery 페이지 성공", Toast.LENGTH_SHORT).show();
-                Intent gallery = new Intent(getActivity(), admin_AddList.class);
+                Intent gallery = new Intent(getActivity(), MyGalleryActivity.class);
                 gallery.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(gallery);
             }

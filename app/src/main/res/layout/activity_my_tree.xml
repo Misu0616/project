@@ -37,7 +37,7 @@
                 android:textSize="30sp" />
 
             <ProgressBar
-                android:id="@+id/levelUp"
+                android:id="@+id/levelBar"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
