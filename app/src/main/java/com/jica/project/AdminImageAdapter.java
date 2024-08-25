@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,8 +28,10 @@ import com.google.firebase.storage.StorageReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class AdminImageAdapter extends RecyclerView.Adapter<AdminImageAdapter.ViewHolder> {
     List<AdminImageModel> AdminImageList;
@@ -130,6 +133,15 @@ public class AdminImageAdapter extends RecyclerView.Adapter<AdminImageAdapter.Vi
 
                             // CheckBox 클릭 리스너 설정
                             holder.admin_checkbox.setOnClickListener(view -> {
+
+                                // 클릭 횟수 추적 및 메서드 호출
+                                holder.clickCount++;
+                                if (holder.clickCount % 2 == 1) {
+                                    increaseProgressbar();
+                                } else {
+                                    decreaseProgressbar();
+                                }
+
                                 boolean newCheckStatus = !image.isAdmin_check();
                                 holder.adminCheck.setText(newCheckStatus ? "인증 완료" : "인증 확인 중");
 
@@ -152,7 +164,6 @@ public class AdminImageAdapter extends RecyclerView.Adapter<AdminImageAdapter.Vi
                                                         Log.w("AdminImageAdapter", "Error updating document", e));
                                     }
                                 }
-                                progressbar();
                             });
                         }
 
@@ -162,7 +173,7 @@ public class AdminImageAdapter extends RecyclerView.Adapter<AdminImageAdapter.Vi
                 });
     }
 
-    private void progressbar() {
+    private void increaseProgressbar() {
 
         databaseReference = FirebaseDatabase.getInstance().getReference("memberInfo").child("cyniaa@naver,com");
 
@@ -172,44 +183,119 @@ public class AdminImageAdapter extends RecyclerView.Adapter<AdminImageAdapter.Vi
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 // 현재 progressbar 값 가져오기
                 String progressNumStr = dataSnapshot.child("progressbar").getValue(String.class);
-                int progressNum;
+                String levelStr = dataSnapshot.child("level").getValue(String.class);
+
+                int progressNumber = Integer.parseInt(progressNumStr);
+                int intLevel = Integer.parseInt(levelStr); // 기본 레벨값
 
                 if (progressNumStr != null) {
                     try {
                         // progressNum 값을 정수로 변환
-                        progressNum = Integer.parseInt(progressNumStr);
+                        progressNumber = Integer.parseInt(progressNumStr);
                     } catch (NumberFormatException e) {
                         // 숫자로 변환할 수 없는 경우 기본값 0으로 설정
-                        progressNum = 0;
+                        progressNumber = 0;
                     }
-                } else {
-                    // progressNum 값이 없는 경우 기본값 0으로 설정
-                    progressNum = 0;
+                }
+
+                if (levelStr != null) {
+                    try {
+                        // level 값을 정수로 변환
+                        intLevel = Integer.parseInt(levelStr);
+                    } catch (NumberFormatException e) {
+                        // 숫자로 변환할 수 없는 경우 기본값 1로 설정
+                        intLevel = 1;
+                    }
                 }
 
                 // progressNum 값을 5씩 증가
-                progressNum += 5;
-                if(progressNum == 100){
-                    progressNum = 0;
-                    // 사진 바꾸는 기능 추가하기 + level 글씨 바꾸기를 어느 페이지에서 해야 할까...?
+                if(intLevel < 4) {
+                    progressNumber += 5;
+
+                    if (progressNumber >= 100) {
+                        progressNumber = 0; // progressNum이 100이 되면 0으로 리셋
+
+                        if (intLevel < 4) {
+                            intLevel++; // 레벨이 4 미만일 때만 증가
+                        }
+                        if (intLevel == 4) {
+                            // Toast.makeText( "축하드립니다 최종 레벨에 도달하셨습니다", Toast.LENGTH_SHORT).show();
+                            Log.d("adapter level", "축하드립니다 최종 레벨에 도달하셨습니다");
+                        }
+                    }
                 }
 
                 // Firebase에 업데이트
-                int finalProgressNum = progressNum;
-                databaseReference.child("progressbar").setValue(String.valueOf(progressNum))
+                Map<String, Object> updates = new HashMap<>();
+                updates.put("progressbar", String.valueOf(progressNumber));
+                updates.put("level", String.valueOf(intLevel));
+
+                databaseReference.updateChildren(updates)
                         .addOnSuccessListener(aVoid -> {
                             // 업데이트 성공 시 로그
-                            Log.d("progress", "Successfully updated progressbar to: " + finalProgressNum);
+                            Log.d("progress", "버튼 확인 +5");
                         })
                         .addOnFailureListener(e -> {
                             // 업데이트 실패 시 로그
-                            Log.w("progress", "Failed to update progressbar", e);
+                            Log.w("progress", "Failed to update progressbar and level", e);
                         });
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 // 데이터 읽기 오류 처리
+                Log.w("progress", "Failed to read progressbar value.", databaseError.toException());
+            }
+        });
+    }
+
+    private void decreaseProgressbar() {
+        databaseReference = FirebaseDatabase.getInstance().getReference("memberInfo").child("cyniaa@naver,쵸com");
+
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String progressNumStr = dataSnapshot.child("progressbar").getValue(String.class);
+                String levelStr = dataSnapshot.child("level").getValue(String.class);
+
+                int progressNumber = 0;
+                int intLevel = 1;
+
+                if (progressNumStr != null) {
+                    try {
+                        progressNumber = Integer.parseInt(progressNumStr);
+                    } catch (NumberFormatException e) {
+                        progressNumber = 0;
+                    }
+                }
+
+                if (levelStr != null) {
+                    try {
+                        intLevel = Integer.parseInt(levelStr);
+                    } catch (NumberFormatException e) {
+                        intLevel = 1;
+                    }
+                }
+
+                if (progressNumber > 0) {
+                    progressNumber -= 5;
+                }
+
+                if (progressNumber < 0) {
+                    progressNumber = 0;
+                }
+
+                Map<String, Object> updates = new HashMap<>();
+                updates.put("progressbar", String.valueOf(progressNumber));
+                updates.put("level", String.valueOf(intLevel));
+
+                databaseReference.updateChildren(updates)
+                        .addOnSuccessListener(aVoid -> Log.d("progress", "버튼 취소 -5"))
+                        .addOnFailureListener(e -> Log.w("progress", "Failed to update progressbar and level", e));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.w("progress", "Failed to read progressbar value.", databaseError.toException());
             }
         });
@@ -233,6 +319,7 @@ public class AdminImageAdapter extends RecyclerView.Adapter<AdminImageAdapter.Vi
         TextView adminCheck;
         ImageView imageView;
         CheckBox admin_checkbox;
+        int clickCount = 0;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

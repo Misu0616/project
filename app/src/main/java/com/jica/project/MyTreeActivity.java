@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,11 +22,14 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class MyTreeActivity extends AppCompatActivity {
 
         TextView dday;
+        ImageView seedPic;
         ProgressBar level;
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference databaseReference = database.getReference();
@@ -60,17 +64,40 @@ public class MyTreeActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 // Firebase에서 가져온 프로그레스 바 정보 표시하기
-                String progressNum = dataSnapshot.child("progressbar").getValue(String.class);
-                level.setProgress(Integer.parseInt(progressNum));
+                String levelStr = dataSnapshot.child("level").getValue(String.class);
+
+                int intLevel = Integer.parseInt(levelStr); // 기본 레벨값
+
+                // 레벨에 따라 이미지 변경
+                ImageView seedPic = findViewById(R.id.seed);
+                switch (intLevel) {
+                    case 1:
+                        seedPic.setImageResource(R.drawable.level_seed);
+                        break;
+                    case 2:
+                        seedPic.setImageResource(R.drawable.level_seed2);
+                        break;
+                    case 3:
+                        seedPic.setImageResource(R.drawable.level_seed3);
+                        break;
+                    case 4:
+                        seedPic.setImageResource(R.drawable.level_seed4);
+                        break;
+                    default:
+                        // 기본 이미지 또는 예외 처리
+                        seedPic.setImageResource(R.drawable.level_seed);
+                        break;
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
-
+                // 데이터베이스 읽기 실패 시 처리
+                Log.w("progress", "Failed to read value.", error.toException());
+            }
+        });
     }
+
 
     private void fetchDataFromFirebase() {
         databaseReference.child("dayInfo").addValueEventListener(new ValueEventListener() {

@@ -206,6 +206,12 @@ public class JoinActivity extends AppCompatActivity {
                     } else {
                     }
                 });
+                databaseReference.child("memberInfo").child(safeEmail).child("level").setValue("1").addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("anssdf", "level 열려라");
+                    } else {
+                    }
+                });
             }
 
 
