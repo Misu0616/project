@@ -116,15 +116,7 @@ public class admin_AddList extends AppCompatActivity {
                                    String downloadurl = document.getString("downloadUrl");
                                    Log.d("answer1", "document id : " + document.getId());
 
-                                   Log.e("answer", "date : " + date);
-                                   Log.e("answer", "title : " + title);
-                                   Log.e("answer", "admin_check : " + admin_check);
-                                   Log.e("answer", "downloadurl : " + downloadurl);
-                                   Log.e("answer", "getUserId : " + getUserId);
-                                   Log.e("answer", "imageList : " + AdminImageList.toString());
-
                                    AdminImageList.add(new AdminImageModel(document.getId(), title, date, admin_check, downloadurl, getUserId));
-                                   Log.e("answer", "AdminImageList : " + AdminImageList.toString());
                                }
                                Collections.reverse(AdminImageList); // 데이터 역순 저장(근데 이거 필요한가...?)
                                adminImageAdapter.updateImageList(AdminImageList);

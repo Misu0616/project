@@ -18,23 +18,10 @@
         android:theme="?attr/actionBarTheme"
         app:title="회원 인증 내역" />
 
-    <!--  <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <GridView
-            android:id="@+id/admin_gallerys"
-            android:layout_width="match_parent"
-            android:layout_height="450sp"
-            android:numColumns="2"
-            android:verticalSpacing="30dp" />
-
-    </FrameLayout>-->
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/adminRecycle"
         android:layout_width="wrap_content"
-        android:layout_height="50dp" />
+        android:layout_height="650dp" />
 <!--android:layout_height="650dp" 원래는 650인데 확인이 안ㄷ ㅚ는 관계로 목록 길이 좀 줄임..-->
     <FrameLayout
         android:id="@+id/galleryUnderbar"

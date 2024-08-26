@@ -120,14 +120,14 @@ public class AdminImageAdapter extends RecyclerView.Adapter<AdminImageAdapter.Vi
 
         List<String> documentIds = new ArrayList<>();
 
-        firestore.collection("mlV0XBUHPpVa6zyIE7rYzGieNwp1")
+        firestore.collection("lCdZqWstNkWUCtAahSsMW3XfRy52")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         documentIds.clear(); // 기존 리스트를 비웁니다
                         for (DocumentSnapshot document : task.getResult().getDocuments()) {
                             String documentId = document.getId();
-                            documentIds.add("mlV0XBUHPpVa6zyIE7rYzGieNwp1");
+                            documentIds.add("lCdZqWstNkWUCtAahSsMW3XfRy52");
                             Log.d("answer123", "document id : " + documentId);
 
                             // CheckBox 클릭 리스너 설정
@@ -149,11 +149,7 @@ public class AdminImageAdapter extends RecyclerView.Adapter<AdminImageAdapter.Vi
                                 // 문서 ID를 통해 Firestore 문서 업데이트
                                 if (!documentIds.isEmpty()) {
                                     for(int i=0; i<documentIds.size(); i++) {
-                                        //String documentId = documentIds.get(i);
-                                        Log.d("checkthing", "document 객체 : " + documentIds);
-                                        Log.d("checkthing", "documentIds.size 객체 : " + documentIds.size());
-                                        Log.d("checkthing", "documentId: " + documentId);
-                                        firestore.collection("mlV0XBUHPpVa6zyIE7rYzGieNwp1")
+                                        firestore.collection("lCdZqWstNkWUCtAahSsMW3XfRy52")
                                                 .document(documentId) // 문서 ID로 문서 참조
                                                 .update("admin_check", newCheckStatus)
                                                 .addOnSuccessListener(aVoid -> {
