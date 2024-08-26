@@ -66,10 +66,6 @@ public class admin_AddList extends AppCompatActivity {
 
             // FirebaseFirestore 인스턴스 초기화
             firebaseFirestore = FirebaseFirestore.getInstance();
-
-            // Firestore 탐색 시작
-            //listAllCollections();
-
         }
 
         private void initRecyclerViews() {
@@ -114,7 +110,6 @@ public class admin_AddList extends AppCompatActivity {
                                    String title = document.getString("title");
                                    Boolean admin_check = document.getBoolean("admin_check");
                                    String downloadurl = document.getString("downloadUrl");
-                                   Log.d("answer1", "document id : " + document.getId());
 
                                    AdminImageList.add(new AdminImageModel(document.getId(), title, date, admin_check, downloadurl, getUserId));
                                }

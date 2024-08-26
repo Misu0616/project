@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 public class SearchListActivity extends AppCompatActivity {
 
     FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference databaseReference = database.getReference();
 
     RecyclerView recyclerView;
     ActivityAdapter activityAdapter;
@@ -72,10 +71,7 @@ public class SearchListActivity extends AppCompatActivity {
         activityList = new ArrayList<>();
         activityAdapter = new ActivityAdapter(activityList);
         recyclerView.setAdapter(activityAdapter);
-        /*
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), new LinearLayoutManager(this).getOrientation());
-        recyclerView.addItemDecoration(dividerItemDecoration);
-*/
+
         // Firebase 데이터 가져오기
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("activityInfo");
         databaseReference.addValueEventListener(new ValueEventListener() {

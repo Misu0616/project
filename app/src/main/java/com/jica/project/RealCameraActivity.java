@@ -76,7 +76,6 @@ public class RealCameraActivity extends AppCompatActivity {
 
     private final ActivityResultLauncher<Intent> cameraResultLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-                Log.d("noAnswer", "1. ActivityResultLauncher");
                 if (result.getResultCode() == RESULT_OK) {
                     if (file != null && file.exists()) {
                         Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
@@ -85,7 +84,6 @@ public class RealCameraActivity extends AppCompatActivity {
                             int orientation = getExifOrientation(file.getAbsolutePath());
                             Bitmap rotatedBitmap = rotateBitmap(bitmap, orientation);
                             imageView.setImageBitmap(rotatedBitmap);
-                            //imageView.setVisibility(View.VISIBLE);
                             uploadImageToFirebase(rotatedBitmap);
 
                         } else {
@@ -101,7 +99,6 @@ public class RealCameraActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("noAnswer", "2. onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_real_camera);
 
@@ -133,7 +130,6 @@ public class RealCameraActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (isCameraInitialized) {
-                    Log.d("noAnswer", "3. onClick");
                     takePicture();
                 } else {
                     Toast.makeText(getApplicationContext(), "카메라 권한을 허용해주세요.", Toast.LENGTH_SHORT).show();
@@ -144,7 +140,6 @@ public class RealCameraActivity extends AppCompatActivity {
 
     private void startCamera() {
         if (isCameraInitialized) return; // 이미 초기화되면 실행 x
-        Log.d("noAnswer", "4. startCamera");
 
         // CameraProvider 인스턴스를 가져옴
         ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider.getInstance(this);
@@ -175,7 +170,6 @@ public class RealCameraActivity extends AppCompatActivity {
     }
 
     private void takePicture() {
-        Log.d("noAnswer", "5. takePicture");
         file = createFile();
         imageUri = FileProvider.getUriForFile(this, "com.jica.project.fileprovider", file);
         Uri uri;
@@ -193,19 +187,16 @@ public class RealCameraActivity extends AppCompatActivity {
 
             cameraResultLauncher.launch(intent);
         } else {
-            Log.e("CameraError", "Uri is null");
             Toast.makeText(this, "사진을 저장할 수 없습니다.", Toast.LENGTH_SHORT).show();
         }
     }
     private File createFile(){
-        Log.d("noAnswer", "6. createFile");
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         String fileName = "photo_" + timeStamp + ".jpg";
         return new File(getExternalFilesDir(null), fileName);
     }
 
     private void uploadImageToFirebase(Bitmap bitmap) {
-        Log.d("noAnswer", "7. uploadImageToFirebase");
         // Bitmap을 바이트 배열로 변환
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
@@ -213,11 +204,6 @@ public class RealCameraActivity extends AppCompatActivity {
 
         // 환경 보호 종류 position으로 나누기
         int position = getIntent().getIntExtra(ActivityAdapter.ViewHolder.POSITION_KEY, -1); // 기본값 -1
-
-        if (position != -1) {
-            Toast.makeText(this, "real Camera 받은 포지션: " + position, Toast.LENGTH_SHORT).show();
-            Log.d("noAnswer : ", "real Camera 받은 포지션: " + position);
-        }
 
         // 사진 이름 현재 날짜로 구별하기
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
@@ -235,7 +221,6 @@ public class RealCameraActivity extends AppCompatActivity {
                         Intent list = new Intent(this, MyGalleryActivity.class);
                         list.putExtra(ActivityAdapter.ViewHolder.POSITION_KEY, position); // position 값 전달
                         list.putExtra(RealCameraActivity.FILENUM_KEY, fileName);
-                        Log.d("noAnswer", "realCamera의 file num : " + fileName);
                         startActivity(list);
                     })
                     .addOnFailureListener(exception -> {

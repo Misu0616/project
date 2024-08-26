@@ -75,9 +75,8 @@ public class MyGalleryActivity extends AppCompatActivity {
         firestore = FirebaseFirestore.getInstance();
 
         String userId = FirebaseAuth.getInstance().getUid();
-        Log.e("noAnswer", "userId     ---- > " + userId);
+
         if (userId == null) {
-            Log.e("Firestore", "User ID is null");
             return;
         }
 
@@ -85,7 +84,6 @@ public class MyGalleryActivity extends AppCompatActivity {
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Log.d("TAG", task.toString());
                         imageList.clear();
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             // 문서에서 텍스트와 이미지 URL을 추출
@@ -98,9 +96,6 @@ public class MyGalleryActivity extends AppCompatActivity {
                         }
                         // Collections.reverse(imageList); // 데이터 역순 저장(근데 이거 필요한가...?)
                         imageAdapter.updateData(imageList);
-
-                        Log.e("answer", "Error getting documents: " +  imageList.toString());
-
                     } else {
                         Log.e("FirestoreError", "Error getting documents: ", task.getException());
                     }

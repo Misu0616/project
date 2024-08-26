@@ -80,7 +80,6 @@ public class AdminSearchListActivity extends AppCompatActivity {
                         Log.e("noAnswer", "activity is null");
                     }
                 }
-                Log.e("noAnswer", activityList.toString());
                 activityAdapter.notifyDataSetChanged(); // 데이터 변경 알리기
             }
 

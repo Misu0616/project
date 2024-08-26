@@ -37,7 +37,6 @@ public class AdminImageAdapter extends RecyclerView.Adapter<AdminImageAdapter.Vi
     List<AdminImageModel> AdminImageList;
     FirebaseFirestore firestore;
     FirebaseFirestore firebaseFirestore;
-    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference databaseReference = database.getReference();
 
@@ -49,7 +48,7 @@ public class AdminImageAdapter extends RecyclerView.Adapter<AdminImageAdapter.Vi
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_gallery_info, parent, false);
-        Log.d("ImageAdapter", "View created: " + view);
+
         return new ViewHolder(view);
     }
 
@@ -128,7 +127,6 @@ public class AdminImageAdapter extends RecyclerView.Adapter<AdminImageAdapter.Vi
                         for (DocumentSnapshot document : task.getResult().getDocuments()) {
                             String documentId = document.getId();
                             documentIds.add("lCdZqWstNkWUCtAahSsMW3XfRy52");
-                            Log.d("answer123", "document id : " + documentId);
 
                             // CheckBox 클릭 리스너 설정
                             holder.admin_checkbox.setOnClickListener(view -> {
@@ -214,7 +212,6 @@ public class AdminImageAdapter extends RecyclerView.Adapter<AdminImageAdapter.Vi
                             intLevel++; // 레벨이 4 미만일 때만 증가
                         }
                         if (intLevel == 4) {
-                            // Toast.makeText( "축하드립니다 최종 레벨에 도달하셨습니다", Toast.LENGTH_SHORT).show();
                             Log.d("adapter level", "축하드립니다 최종 레벨에 도달하셨습니다");
                         }
                     }

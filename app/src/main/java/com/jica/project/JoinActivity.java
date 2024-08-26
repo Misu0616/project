@@ -40,7 +40,7 @@ public class JoinActivity extends AppCompatActivity {
     private DatabaseReference databaseReference = database.getReference();
     private FirebaseAuth firebaseAuth;
 
-    Button btnJoin, btnFinalJoin, btnCheckMail;
+    Button btnFinalJoin, btnCheckMail;
     EditText memIdT, memPasswordT, checkMemPWT, memEmailT;
     ImageButton PasswordVisibility1, PasswordVisibility2;
     private boolean isPasswordVisible = false;

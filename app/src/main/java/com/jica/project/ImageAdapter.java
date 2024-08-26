@@ -29,7 +29,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.galleryviewlist, parent, false);
-        Log.d("ImageAdapter", "View created: " + view);
+
         return new ViewHolder(view);
     }
 
