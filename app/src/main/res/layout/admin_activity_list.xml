@@ -50,7 +50,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/admin_recycle"
         android:layout_width="match_parent"
-        android:layout_height="380sp" />
+        android:layout_height="540sp" />
 
     <FrameLayout
         android:id="@+id/admin_activity_list"

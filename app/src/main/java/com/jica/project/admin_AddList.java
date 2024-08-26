@@ -126,7 +126,7 @@ public class admin_AddList extends AppCompatActivity {
                                    AdminImageList.add(new AdminImageModel(document.getId(), title, date, admin_check, downloadurl, getUserId));
                                    Log.e("answer", "AdminImageList : " + AdminImageList.toString());
                                }
-
+                               Collections.reverse(AdminImageList); // 데이터 역순 저장(근데 이거 필요한가...?)
                                adminImageAdapter.updateImageList(AdminImageList);
 
                            } else {

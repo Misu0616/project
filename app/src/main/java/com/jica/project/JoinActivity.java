@@ -54,7 +54,6 @@ public class JoinActivity extends AppCompatActivity {
 
         btnFinalJoin = findViewById(R.id.finalJoin);
         btnCheckMail = findViewById(R.id.btnCheckMail);
-        btnJoin = findViewById(R.id.btnJoin);
         memIdT = findViewById(R.id.memId);
         memPasswordT = findViewById(R.id.memPW);
         checkMemPWT = findViewById(R.id.checkMemPW);
@@ -62,22 +61,21 @@ public class JoinActivity extends AppCompatActivity {
         PasswordVisibility1 = findViewById(R.id.PasswordVisibility1);
         PasswordVisibility2 = findViewById(R.id.PasswordVisibility2);
 
-        // 아이디 중복 확인 버튼
-        btnJoin.setOnClickListener(new View.OnClickListener() {
+        btnCheckMail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String memId = memIdT.getText().toString();
-                DatabaseReference memberRef = databaseReference.child("memberInfo").child(memId);
-
+                String email = memEmailT.getText().toString();
+                String safeEmail = email.replace(".", ",");
+                DatabaseReference memberRef = databaseReference.child("memberInfo").child(safeEmail);
                 memberRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if (dataSnapshot.exists()) {
                             // 아이디가 이미 존재하는 경우
-                            Toast.makeText(JoinActivity.this, "이미 사용 중인 아이디입니다.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(JoinActivity.this, "이미 사용 중인 이메일입니다.", Toast.LENGTH_SHORT).show();
                         } else {
                             // 아이디가 존재하지 않는 경우
-                            Toast.makeText(JoinActivity.this, "사용 가능한 아이디입니다.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(JoinActivity.this, "사용 가능한 이메일입니다.", Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -90,32 +88,11 @@ public class JoinActivity extends AppCompatActivity {
             }
         });
 
-        // 이메일 중복 확인 버튼 - 일단 보류================================================
-        btnCheckMail.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d("noAnser", "클릭 실행");
-                FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-                String email = memEmailT.getText().toString();
-                Log.d("noAnser", "이메일 : " + email);
-                if (currentUser != null) {
-                    String firebaseEmail = currentUser.getEmail();
-                    Log.d("noAnser", "파이어베이스 이메일 : " +  currentUser.getEmail());
-                    if (email.equals(firebaseEmail)) {
-                        Log.d("noAnser", "이메일 중복");
-                        Toast.makeText(JoinActivity.this, "중복된 이메일입니다", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(JoinActivity.this, "사용 가능한 이메일입니다", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        });
-
         // 비밀번호 글자 보이기
         PasswordVisibility1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!isPasswordVisible) {
+                if (isPasswordVisible) {
                     memPasswordT.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                     PasswordVisibility1.setImageResource(R.drawable.visibility_off);
                 } else {
@@ -129,7 +106,7 @@ public class JoinActivity extends AppCompatActivity {
         PasswordVisibility2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!isPasswordVisible) {
+                if (isPasswordVisible) {
                     checkMemPWT.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                     PasswordVisibility1.setImageResource(R.drawable.visibility_off);
                 } else {
@@ -143,10 +120,8 @@ public class JoinActivity extends AppCompatActivity {
 
         // 최종 회원가입 버튼
         btnFinalJoin.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View view) {
-
                 String email = memEmailT.getText().toString();
                 String id = memIdT.getText().toString();
                 String pwd = memPasswordT.getText().toString();
@@ -184,7 +159,6 @@ public class JoinActivity extends AppCompatActivity {
                             finish();
                             Toast.makeText(JoinActivity.this, "회원 가입되셨습니다.\n" + id + "님 환영합니다", Toast.LENGTH_SHORT).show();
                         } else {
-                            Log.d("SignUp", "회원가입 안 됨?");
                             Toast.makeText(JoinActivity.this, "회원 가입에 실패했습니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -192,8 +166,8 @@ public class JoinActivity extends AppCompatActivity {
 
                 // 사용자 정보를 Firebase에 저장
                 String memKey = id;
-                memberInfo memberInfo = new memberInfo(id, pwd, email);
                 String safeEmail = email.replace(".", ",");
+                memberInfo memberInfo = new memberInfo(id, pwd, safeEmail);
 
                databaseReference.child("memberInfo").child(safeEmail).setValue(memberInfo).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -202,13 +176,11 @@ public class JoinActivity extends AppCompatActivity {
                 });
                 databaseReference.child("memberInfo").child(safeEmail).child("progressbar").setValue("0").addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Log.d("anssdf", "progressbar 열려라");
                     } else {
                     }
                 });
                 databaseReference.child("memberInfo").child(safeEmail).child("level").setValue("1").addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Log.d("anssdf", "level 열려라");
                     } else {
                     }
                 });
@@ -241,18 +213,9 @@ public class JoinActivity extends AppCompatActivity {
         databaseReference.child("memberInfo").child(email.replace(".", ",")).child("dayInfo").setValue(dday)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        // 기준 날짜와 코드 저장
-                                    Log.d("SignUp", "기준 날짜와 코드 Realtime Database에 저장 성공");
-                                    Toast.makeText(JoinActivity.this, "회원가입 성공", Toast.LENGTH_SHORT).show();
-
-                                    Intent intent = new Intent(JoinActivity.this, MyTreeActivity.class);
-                                    startActivity(intent);
-
-                                    Log.w("SignUp", "Realtime Database에 기준 날짜와 코드 저장 실패");
-                                    Toast.makeText(JoinActivity.this, "회원가입 실패", Toast.LENGTH_SHORT).show();
+                        Log.w("SignUp", "Realtime Database에 기준 날짜와 코드 저장 실패");
                     } else {
                         Log.w("SignUp", "Realtime Database에 사용자 정보 저장 실패", task.getException());
-                        Toast.makeText(JoinActivity.this, "회원가입 실패", Toast.LENGTH_SHORT).show();
                     }
                 });
 }

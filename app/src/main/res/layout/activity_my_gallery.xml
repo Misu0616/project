@@ -20,7 +20,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/doneList"
         android:layout_width="wrap_content"
-        android:layout_height="450sp">
+        android:layout_height="570sp">
 
     </androidx.recyclerview.widget.RecyclerView>
 

@@ -42,15 +42,12 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
                 Glide.with(holder.imageView.getContext())
                         .load(image.getDownloadurl())
                         .into(holder.imageView);
-            } else {
-                holder.imageView.setImageResource(android.R.color.transparent); // 이미지가 없을 경우 투명하게 설정
             }
 
         if (holder.datelist != null) {
-            Date now = new Date();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            String formattedDate = dateFormat.format(now);
-            holder.datelist.setText(formattedDate);
+            String date = image.getDate();
+            String frontDate = date.substring(0, 8);
+            holder.datelist.setText(frontDate);
         } else {
             Log.e("ActivityAdapter", "datelist is null");
         }

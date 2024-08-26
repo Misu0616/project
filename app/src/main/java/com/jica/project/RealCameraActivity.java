@@ -85,7 +85,7 @@ public class RealCameraActivity extends AppCompatActivity {
                             int orientation = getExifOrientation(file.getAbsolutePath());
                             Bitmap rotatedBitmap = rotateBitmap(bitmap, orientation);
                             imageView.setImageBitmap(rotatedBitmap);
-                            imageView.setVisibility(View.VISIBLE);
+                            //imageView.setVisibility(View.VISIBLE);
                             uploadImageToFirebase(rotatedBitmap);
 
                         } else {
@@ -109,7 +109,7 @@ public class RealCameraActivity extends AppCompatActivity {
         storageRef = storage.getReference();
         firebaseAuth = FirebaseAuth.getInstance();
 
-        imageView = findViewById(R.id.imageView);
+        imageView = findViewById(R.id.imageView4);
         Button btnCamera = findViewById(R.id.btnCamera);
 
         cameraExecutor = Executors.newSingleThreadExecutor();
@@ -227,9 +227,6 @@ public class RealCameraActivity extends AppCompatActivity {
         if (currentUser != null) {
             String userId = currentUser.getUid(); // UID 가져오기
 
-            // Firebase 에 업로드
-            // saveDoneLists(String.valueOf(position), timeStamp, Boolean.valueOf("false"));
-
             // Firebase Storage에 업로드
             StorageReference imagesRef = storageRef.child(userId).child(fileName); // 경로 설정
             imagesRef.putBytes(data)
@@ -297,35 +294,6 @@ public class RealCameraActivity extends AppCompatActivity {
                 });
     }
 
-    /*public void saveDoneLists(String title, String date, Boolean admin_check) {
-        // Firebase에 인증 내역 저장하기
-        showDoneList showDoneList = new showDoneList(title, date, admin_check);
-
-        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-        String userEmail = sharedPreferences.getString("USER_EMAIL", null);
-        String safeEmail = userEmail.replace(".", ",");
-
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("memberInfo").child(safeEmail).child("imageInfo").child(date);
-
-        if (userEmail != null) {
-            Log.d("UserEmail", "받은 이메일: " + userEmail);
-        } else {
-            Log.d("UserEmail", "이메일 값이 없습니다.");
-        }
-
-        if (firebaseAuth.getCurrentUser() != null) {
-            databaseReference.setValue(showDoneList)
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            Log.d("Firebase", "데이터가 성공적으로 추가되었습니다.");
-                        } else {
-                            Log.e("Firebase", "데이터 추가 실패: " + task.getException().getMessage());
-                        }
-                    });
-        } else {
-            Log.d("Firebase", "사용자가 로그인하지 않았습니다.");
-        }
-    }*/
     private int getExifOrientation(String path) {
         int orientation = ExifInterface.ORIENTATION_UNDEFINED;
         try {

@@ -26,6 +26,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,20 +52,20 @@ public class MyGalleryActivity extends AppCompatActivity {
         // RecyclerView 초기화
         initRecyclerViews();
 
-
         // 데이터 로드
-       loadData();
+        loadData();
     }
 
     private void initRecyclerViews() {
         recyclerViewList = findViewById(R.id.doneList);
         int numberOfColumns = 2;
 
-        recyclerViewList.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
-
         imageList = new ArrayList<>();
         imageAdapter = new ImageAdapter(imageList);
         recyclerViewList.setAdapter(imageAdapter);
+
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, numberOfColumns);
+        recyclerViewList.setLayoutManager(gridLayoutManager);
     }
 
     private void loadData() {
@@ -92,16 +93,10 @@ public class MyGalleryActivity extends AppCompatActivity {
                             String title = document.getString("title");
                             Boolean admin_check = document.getBoolean("admin_check");
                             String downloadurl = document.getString("downloadUrl");
-                            Log.e("answer", "date : " +  date);
-                            Log.e("answer", "title : " +  title);
-                            Log.e("answer", "admin_check : " +  admin_check);
-                            Log.e("answer", "downloadurl : " +  downloadurl);
-                            Log.e("answer", "imageList : " +  imageList.toString());
 
                             imageList.add(new ImageModel(title, date, admin_check, downloadurl));
-                            Log.e("answer", "imageList : " +  imageList.toString());
                         }
-                        // 어댑터에 데이터 변경 사항을 알립니다.
+                        // Collections.reverse(imageList); // 데이터 역순 저장(근데 이거 필요한가...?)
                         imageAdapter.updateData(imageList);
 
                         Log.e("answer", "Error getting documents: " +  imageList.toString());

@@ -117,18 +117,17 @@ public class AdminImageAdapter extends RecyclerView.Adapter<AdminImageAdapter.Vi
         }
 
         firebaseFirestore = FirebaseFirestore.getInstance();
-        String userId = firebaseAuth.getCurrentUser().getUid();
 
         List<String> documentIds = new ArrayList<>();
 
-        firestore.collection("hT20GF9j8AW05aWLPgGUpOUgsgh1")
+        firestore.collection("mlV0XBUHPpVa6zyIE7rYzGieNwp1")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         documentIds.clear(); // 기존 리스트를 비웁니다
                         for (DocumentSnapshot document : task.getResult().getDocuments()) {
                             String documentId = document.getId();
-                            documentIds.add("hT20GF9j8AW05aWLPgGUpOUgsgh1");
+                            documentIds.add("mlV0XBUHPpVa6zyIE7rYzGieNwp1");
                             Log.d("answer123", "document id : " + documentId);
 
                             // CheckBox 클릭 리스너 설정
@@ -154,7 +153,7 @@ public class AdminImageAdapter extends RecyclerView.Adapter<AdminImageAdapter.Vi
                                         Log.d("checkthing", "document 객체 : " + documentIds);
                                         Log.d("checkthing", "documentIds.size 객체 : " + documentIds.size());
                                         Log.d("checkthing", "documentId: " + documentId);
-                                        firestore.collection("hT20GF9j8AW05aWLPgGUpOUgsgh1")
+                                        firestore.collection("mlV0XBUHPpVa6zyIE7rYzGieNwp1")
                                                 .document(documentId) // 문서 ID로 문서 참조
                                                 .update("admin_check", newCheckStatus)
                                                 .addOnSuccessListener(aVoid -> {

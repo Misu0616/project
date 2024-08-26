@@ -53,10 +53,9 @@ public class MainActivity extends AppCompatActivity {
         pwT = findViewById(R.id.password);
 
         // 자동 로그인
-        if (firebaseAuth.getCurrentUser() != null) {
+       if (firebaseAuth.getCurrentUser() != null) {
             if (firebaseAuth.getCurrentUser().getEmail().toString().equals("admin@naver.com")) {
                 Toast.makeText(MainActivity.this, "관리자 페이지 로그인", Toast.LENGTH_SHORT).show();
-                Log.d("hihihihi", "member Login111 : " + firebaseAuth.getCurrentUser().getEmail());
                 Intent intent2 = new Intent(MainActivity.this, admin_AddList.class);
                 startActivity(intent2);
                 finish();
@@ -82,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
                 String memId = pwT.getText().toString();
 
                 Login(email, memId);
-
             }
         });
 
@@ -97,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    // 사용자가 권한에 대한 대화 상자에서 예(승인),아니오(거부)를 선택 했을 때 호출된 callback 메서드
+    // 사용자가 카메라 권한에 대한 대화 상자에서 예(승인),아니오(거부)를 선택 했을 때 호출된 callback 메서드
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -112,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
     // 로그인하기
     public void Login(String emailT, String pwT) {
 
@@ -121,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             if (firebaseAuth.getCurrentUser().getEmail().toString().equals("admin@naver.com")) {
-                                Log.d("hihihihi", "member Login333 : " + firebaseAuth.getCurrentUser().getEmail());
                                 Toast.makeText(MainActivity.this, "관리자 페이지 로그인", Toast.LENGTH_SHORT).show();
                                 Intent intent2 = new Intent(MainActivity.this, admin_AddList.class);
                                 startActivity(intent2);

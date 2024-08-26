@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="#ffffff"
+    android:orientation="vertical"
     tools:context=".MyGalleryActivity">
 
 
@@ -16,7 +16,7 @@
         android:background="#F1F1F1"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
-        app:title="회원 인증 내역"  />
+        app:title="회원 인증 내역" />
 
     <!--  <FrameLayout
         android:layout_width="match_parent"
@@ -34,8 +34,8 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/adminRecycle"
         android:layout_width="wrap_content"
-        android:layout_height="510sp" />
-
+        android:layout_height="50dp" />
+<!--android:layout_height="650dp" 원래는 650인데 확인이 안ㄷ ㅚ는 관계로 목록 길이 좀 줄임..-->
     <FrameLayout
         android:id="@+id/galleryUnderbar"
         android:layout_width="match_parent"

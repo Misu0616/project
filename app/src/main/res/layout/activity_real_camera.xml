@@ -4,38 +4,72 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="#ECE7DB"
+    android:gravity="center"
+    android:orientation="vertical"
     tools:context=".RealCameraActivity">
 
     <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:visibility="gone" />
-
-    <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/imageView4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@drawable/recyclebag" />
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30sp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="200sp"
+            android:layout_height="170dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/recycle_right_example" />
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="180sp"
+            android:layout_height="200dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/recycle_wrong_example" />
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10sp"
+        android:fontFamily="@font/nanumsquareround"
+        android:gravity="center_horizontal"
+        android:padding="10sp"
+        android:text="지짐이 사진 인증 규칙"
+        android:textSize="25sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/textView11"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="20sp"
         android:fontFamily="@font/nanumsquareround"
-        android:text=
-            "지짐이 사진 인증 규칙
-            1. 사물을 잘 보이게 찍어주세요
-            2. 인증하려는 활동과 맞는 사진을 찍어주세요. 활동과 상관없는 사진은 인증확인을 받지 못할 수 있어요
-            3. 항상 정직한 마음으로 인증해주세요" />
+        android:padding="10sp"
+        android:text=" 1. 사물을 잘 보이게 찍어주세요
+            \n\n  2.인증하려는 활동 사진을 찍어주세요.
+            \n      - 활동과 상관없는 사진은 인증확인을 받지 못할 수 있어요 :(
+            \n\n  3. 항상 정직한 마음으로 인증해주세요♥"
+        android:textSize="20sp" />
 
-    <Button
+    <android.widget.Button
         android:id="@+id/btnCamera"
-        android:layout_width="match_parent"
+        android:layout_width="200sp"
         android:layout_height="wrap_content"
-        android:text="사진 찍기" />
+        android:layout_marginTop="10sp"
+        android:background="@drawable/checkid"
+        android:fontFamily="@font/nanumsquareround"
+        android:text="사진 찍기"
+        android:textSize="20sp" />
 
 </LinearLayout>

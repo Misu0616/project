@@ -10,5 +10,6 @@
         android:layout_height="wrap_content"
         android:padding="16dp"
         android:text="hi"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:fontFamily="@font/nanumsquareround"/>
 </LinearLayout>

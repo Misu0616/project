@@ -13,7 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="날짜"
-        android:textAlignment="center" />
+        android:textAlignment="center"
+        android:fontFamily="@font/nanumsquareround"/>/>
 
     <TextView
         android:id="@+id/adminUser"
@@ -21,7 +22,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:text="사용자 아이디"
-        android:textAlignment="center" />
+        android:textAlignment="center"
+        android:fontFamily="@font/nanumsquareround"/>/>
 
     <TextView
         android:id="@+id/adminTitle"
@@ -29,7 +31,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:text="인증 활동 제목"
-        android:textAlignment="center" />
+        android:textAlignment="center"
+        android:fontFamily="@font/nanumsquareround"/>/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -47,7 +50,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="인증 멘트"
-            android:textColor="#FF0000" />
+            android:textColor="#FF0000"
+            android:fontFamily="@font/nanumsquareround"/>/>
     </LinearLayout>
 
     <ImageView

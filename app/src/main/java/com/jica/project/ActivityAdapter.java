@@ -48,7 +48,6 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
         notifyDataSetChanged(); // RecyclerView에 데이터 변경 알리기
     }
 
-
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public static final String POSITION_KEY = "position_key";
         TextView activityTextView;
@@ -85,8 +84,5 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
                 }
             });
         }
-
     }
-
-
 }

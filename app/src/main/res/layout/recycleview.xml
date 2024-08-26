@@ -10,10 +10,5 @@
     android:textSize="24sp"
     android:clickable="true"
     android:onClick="btnActivity"
-    >
-
-    <!-- <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycleview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />-->
+    android:fontFamily="@font/nanumsquareround">
 </TextView>
