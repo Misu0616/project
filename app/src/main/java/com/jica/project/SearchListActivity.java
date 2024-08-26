@@ -3,6 +3,7 @@ package com.jica.project;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -71,7 +72,10 @@ public class SearchListActivity extends AppCompatActivity {
         activityList = new ArrayList<>();
         activityAdapter = new ActivityAdapter(activityList);
         recyclerView.setAdapter(activityAdapter);
-
+        /*
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), new LinearLayoutManager(this).getOrientation());
+        recyclerView.addItemDecoration(dividerItemDecoration);
+*/
         // Firebase 데이터 가져오기
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("activityInfo");
         databaseReference.addValueEventListener(new ValueEventListener() {

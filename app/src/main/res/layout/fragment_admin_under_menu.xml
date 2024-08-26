@@ -6,43 +6,108 @@
     android:layout_height="match_parent"
     tools:context=".underBar">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@drawable/underbar_round"
+        android:orientation="horizontal">
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50sp"
-            android:layout_gravity="bottom"
-            android:background="#F1F1F1"
-            android:orientation="horizontal">
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
             <ImageButton
                 android:id="@+id/adminList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
                 android:layout_weight="1"
-                android:background="#F1F1F1"
-                android:src="@drawable/photo_camera" />
+                android:background="#00ff0000"
+                android:src="@drawable/add" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="목록 추가" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
             <ImageButton
                 android:id="@+id/adminAdd"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
                 android:layout_weight="1"
-                android:background="#F1F1F1"
-                android:src="@drawable/photo_camera" />
+                android:background="#00ff0000"
+                android:src="@drawable/list" />
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="인증 내역" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
             <ImageButton
                 android:id="@+id/adminActivityList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
                 android:layout_weight="1"
-                android:background="#F1F1F1"
-                android:src="@drawable/photo_camera" />
+                android:background="#00ff0000"
+                android:src="@drawable/searchicon" />
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="활동 종류" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
             <ImageButton
                 android:id="@+id/logout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
                 android:layout_weight="1"
-                android:background="#F1F1F1"
-                android:src="@drawable/photo_camera" />
+                android:background="#00ff0000"
+                android:src="@drawable/logout" />
+
+            <TextView
+                android:id="@+id/textView13"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="로그아웃" />
         </LinearLayout>
+
+    </LinearLayout>
 </FrameLayout>

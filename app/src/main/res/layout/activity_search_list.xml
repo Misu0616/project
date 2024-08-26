@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ECE7DB"
+    android:background="#ffffff"
     android:orientation="vertical"
     tools:context=".SearchListActivity">
 
@@ -43,7 +43,8 @@
         android:id="@+id/showList"
         android:layout_width="match_parent"
         android:layout_height="480dp"
-        android:background="#80F1F1F1" />
+        android:background="#80F1F1F1" >
+    </androidx.recyclerview.widget.RecyclerView>
 
     <FrameLayout
         android:id="@+id/underbarSearch"

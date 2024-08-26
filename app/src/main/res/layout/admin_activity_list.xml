@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ECE7DB"
+    android:background="#ffffff"
     android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#F1F1F1"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:title="환경 보호 활동" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -11,37 +21,36 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="50dp"
         android:layout_marginBottom="40dp"
-        android:background="@drawable/loginbtn"
-        android:orientation="horizontal">
+        android:background="@drawable/adminbox"
+        android:orientation="horizontal"
+        android:padding="5dp">
 
         <ImageButton
             android:id="@+id/admin_search"
-            android:layout_width="40sp"
-            android:layout_height="40sp"
+            android:layout_width="30sp"
+            android:layout_height="30sp"
             android:layout_marginLeft="5sp"
-            android:background="#528265"
-            android:src="@drawable/search" />
+            android:background="#ffffff"
+            android:src="@drawable/searchblack" />
 
         <EditText
             android:id="@+id/admin_searchWord"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
+            android:layout_marginLeft="10dp"
             android:layout_marginTop="3sp"
-            android:layout_marginRight="10dp"
             android:layout_marginBottom="3sp"
             android:background="@null"
             android:hint="검색어를 입력해주세요"
             android:textAppearance="@style/search"
-            android:textColorHint="#ffffff"  />
+            android:textColorHint="#000000" />
 
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/admin_recycle"
         android:layout_width="match_parent"
-        android:layout_height="480dp"
-        android:background="#80F1F1F1" />
+        android:layout_height="380sp" />
 
     <FrameLayout
         android:id="@+id/admin_activity_list"

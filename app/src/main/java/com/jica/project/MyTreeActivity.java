@@ -39,8 +39,6 @@ public class MyTreeActivity extends AppCompatActivity {
 
             dday = findViewById(R.id.dday);
             levelbar = findViewById(R.id.levelBar);
-            int progress = levelbar.getProgress();
-            levelbar.setProgress(progress);
 
             firebaseAuth = FirebaseAuth.getInstance();
 
@@ -59,6 +57,10 @@ public class MyTreeActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 // Firebase에서 가져온 프로그레스 바 정보 표시하기
                 String levelStr = dataSnapshot.child("level").getValue(String.class);
+                String progressNum = dataSnapshot.child("progressbar").getValue(String.class);
+                int progress = Integer.parseInt(progressNum);
+                levelbar.setProgress(progress);
+
                 int intLevel = Integer.parseInt(levelStr);
                 levelNum = findViewById(R.id.level);
 

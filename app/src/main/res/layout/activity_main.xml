@@ -22,6 +22,7 @@
         android:layout_marginTop="30dp"
         android:gravity="top"
         android:text="EMAIL"
+        android:fontFamily="@font/bmjua"
         android:textAppearance="@style/email" />
 
     <EditText
@@ -39,6 +40,7 @@
         android:layout_marginTop="20dp"
         android:gravity="top"
         android:text="PASSWORD"
+        android:fontFamily="@font/bmjua"
         android:textAppearance="@style/email" />
 
     <EditText
@@ -60,7 +62,8 @@
         android:onClick="login"
         android:padding="7sp"
         android:textAppearance="@style/login"
-        android:background="@drawable/loginbtn"/>
+        android:background="@drawable/loginbtn"
+        android:fontFamily="@font/bmjua"/>
 
     <android.widget.Button
         android:id="@+id/btnJoin"
@@ -72,6 +75,7 @@
         android:textAppearance="@style/login"
         android:background="@drawable/loginbtn"
         android:padding="7sp"
+        android:fontFamily="@font/bmjua"
         android:text="회원가입하기" />
 
 

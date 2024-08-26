@@ -4,10 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ECE7DB"
+    android:background="#ffffff"
     android:gravity="center_horizontal"
     android:orientation="vertical"
     tools:context=".addmin_addProtectThing">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#F1F1F1"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:title="환경 보호 내역 추가" />
 
     <EditText
         android:id="@+id/addActivity"
@@ -22,9 +31,11 @@
         android:id="@+id/btnAddActivity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/loginbtn"
+        android:background="@drawable/adminbtn"
+        android:padding="10dp"
         android:text="활동 추가"
         android:textAppearance="@style/login"
+        android:fontFamily="@font/bmjua"
         android:textSize="20dp" />
 
     <FrameLayout

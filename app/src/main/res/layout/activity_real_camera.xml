@@ -5,15 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="#ECE7DB"
     tools:context=".RealCameraActivity">
 
-    <!--<androidx.camera.view.PreviewView
-        android:id="@+id/previewView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:visibility="gone"/>
--->
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
@@ -31,7 +25,12 @@
         android:id="@+id/textView11"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="예시처럼 사물을 잘 보이게 찍어주세요" />
+        android:fontFamily="@font/nanumsquareround"
+        android:text=
+            "지짐이 사진 인증 규칙
+            1. 사물을 잘 보이게 찍어주세요
+            2. 인증하려는 활동과 맞는 사진을 찍어주세요. 활동과 상관없는 사진은 인증확인을 받지 못할 수 있어요
+            3. 항상 정직한 마음으로 인증해주세요" />
 
     <Button
         android:id="@+id/btnCamera"

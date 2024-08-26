@@ -33,7 +33,6 @@ public class AdminUnderBar extends Fragment {
         btnAdminList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getContext(), "camera 페이지 성공", Toast.LENGTH_SHORT).show();
                 Intent camera = new Intent(getActivity(), addmin_addProtectThing.class);
                 camera.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(camera);
@@ -43,7 +42,6 @@ public class AdminUnderBar extends Fragment {
         btnAdminAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getContext(), "home 페이지 성공", Toast.LENGTH_SHORT).show();
                 Intent home = new Intent(getActivity(), admin_AddList.class);
                 home.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(home);

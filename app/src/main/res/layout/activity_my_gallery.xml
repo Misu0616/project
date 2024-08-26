@@ -17,16 +17,6 @@
         android:theme="?attr/actionBarTheme"
         app:title="나의 인증" />
 
-    <TextView
-        android:id="@+id/textView9"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:layout_margin="30sp"
-        android:background="@drawable/loginbox"
-        android:padding="7sp"
-        android:text="최신순" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/doneList"
         android:layout_width="wrap_content"
