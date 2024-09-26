@@ -1,4 +1,4 @@
-package com.jica.project;
+package com.jica.project.model;
 
 public class AdminImageModel {
     private String title;

@@ -1,4 +1,4 @@
-package com.jica.project;
+package com.jica.project.view.activity.auth;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,15 +15,16 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.api.LogDescriptor;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.jica.project.view.activity.user.MyTreeActivity;
+import com.jica.project.R;
+import com.jica.project.model.memberInfo;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -165,7 +166,6 @@ public class JoinActivity extends AppCompatActivity {
                 });
 
                 // 사용자 정보를 Firebase에 저장
-                String memKey = id;
                 String safeEmail = email.replace(".", ",");
                 memberInfo memberInfo = new memberInfo(id, pwd, safeEmail);
 
@@ -185,11 +185,7 @@ public class JoinActivity extends AppCompatActivity {
                     }
                 });
             }
-
-
-
         });
-
     }
 
     private void saveUserInfoToDatabase(String email) {

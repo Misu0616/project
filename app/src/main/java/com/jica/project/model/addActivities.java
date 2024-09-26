@@ -1,10 +1,10 @@
-package com.jica.project;
+package com.jica.project.model;
 
-public class addActivity {
+public class addActivities {
     String actNumber;
     String addActivityT;
 
-    public addActivity(String actNumber) {
+    public addActivities(String actNumber) {
         this.actNumber = actNumber;
         this.addActivityT = addActivityT;
     }

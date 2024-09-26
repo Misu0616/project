@@ -1,4 +1,4 @@
-package com.jica.project;
+package com.jica.project.view.activity.admin;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -15,6 +15,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.jica.project.view.fragment.AdminUnderBar;
+import com.jica.project.R;
+import com.jica.project.model.addActivities;
 
 public class addmin_addProtectThing extends AppCompatActivity {
 
@@ -47,7 +50,7 @@ public class addmin_addProtectThing extends AppCompatActivity {
         });
     }
     public void addActivities(String addActivity){
-        addActivity addActivityJava = new addActivity(addActivity);
+        addActivities addActivityJava = new addActivities(addActivity);
 
         databaseReference.child("activityInfo").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

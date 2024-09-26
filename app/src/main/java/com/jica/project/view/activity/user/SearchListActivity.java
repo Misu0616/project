@@ -1,10 +1,4 @@
-package com.jica.project;
-
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageButton;
+package com.jica.project.view.activity.user;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,20 +6,28 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageButton;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.jica.project.R;
+import com.jica.project.model.ActivityModel;
+import com.jica.project.view.adapter.ActivityAdapter;
+import com.jica.project.view.fragment.underBar;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-public class AdminSearchListActivity extends AppCompatActivity {
-
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
+public class SearchListActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
     ActivityAdapter activityAdapter;
@@ -34,7 +36,7 @@ public class AdminSearchListActivity extends AppCompatActivity {
     ImageButton search;
     EditText searchWord;
 
-    public AdminSearchListActivity() {
+    public SearchListActivity() {
         super();
     }
 
@@ -43,15 +45,15 @@ public class AdminSearchListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         // 검색창 layout
-        setContentView(R.layout.admin_activity_list);
+        setContentView(R.layout.activity_search_list);
 
         // 하단 네비게이션 바
-        Fragment adminUnderbar = new AdminUnderBar();
-        getSupportFragmentManager().beginTransaction().replace(R.id.admin_activity_list, adminUnderbar).commit();
+        Fragment underBar1 = new underBar();
+        getSupportFragmentManager().beginTransaction().replace(R.id.underbarSearch, underBar1).commit();
 
         // 검색창 돋보기 클릭 
-        search = findViewById(R.id.admin_search);
-        searchWord = findViewById(R.id.admin_searchWord);
+        search = findViewById(R.id.search);
+        searchWord = findViewById(R.id.searchWord);
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -60,7 +62,7 @@ public class AdminSearchListActivity extends AppCompatActivity {
         });
 
         // 리스트 출력하기
-        recyclerView = findViewById(R.id.admin_recycle);
+        recyclerView = findViewById(R.id.showList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         activityList = new ArrayList<>();
         activityAdapter = new ActivityAdapter(activityList);
@@ -80,6 +82,7 @@ public class AdminSearchListActivity extends AppCompatActivity {
                         Log.e("noAnswer", "activity is null");
                     }
                 }
+                Log.e("noAnswer", activityList.toString());
                 activityAdapter.notifyDataSetChanged(); // 데이터 변경 알리기
             }
 

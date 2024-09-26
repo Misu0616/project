@@ -1,4 +1,4 @@
-package com.jica.project;
+package com.jica.project.view.activity.camera;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -12,7 +12,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -31,15 +30,14 @@ import android.widget.Toast;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.jica.project.view.adapter.ActivityAdapter;
+import com.jica.project.view.activity.user.MyGalleryActivity;
+import com.jica.project.R;
 /*import com.yanzhenjie.permission.Action;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.runtime.Permission;*/
@@ -47,16 +45,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-public class RealCameraActivity extends AppCompatActivity {
+public class CameraActivity extends AppCompatActivity {
 
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private FirebaseStorage storage;
@@ -208,6 +204,7 @@ public class RealCameraActivity extends AppCompatActivity {
         // 사진 이름 현재 날짜로 구별하기
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         String fileName = "photo_" + timeStamp + ".jpg";
+
         // UID로 user 구분하기
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
         if (currentUser != null) {
@@ -217,14 +214,14 @@ public class RealCameraActivity extends AppCompatActivity {
             StorageReference imagesRef = storageRef.child(userId).child(fileName); // 경로 설정
             imagesRef.putBytes(data)
                     .addOnSuccessListener(taskSnapshot -> {
-                        Toast.makeText(RealCameraActivity.this, "업로드 성공", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CameraActivity.this, "업로드 성공", Toast.LENGTH_SHORT).show();
                         Intent list = new Intent(this, MyGalleryActivity.class);
                         list.putExtra(ActivityAdapter.ViewHolder.POSITION_KEY, position); // position 값 전달
-                        list.putExtra(RealCameraActivity.FILENUM_KEY, fileName);
+                        list.putExtra(CameraActivity.FILENUM_KEY, fileName);
                         startActivity(list);
                     })
                     .addOnFailureListener(exception -> {
-                        Toast.makeText(RealCameraActivity.this, "업로드 실패", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CameraActivity.this, "업로드 실패", Toast.LENGTH_SHORT).show();
                     });
             StorageReference imageRef = storageRef.child(userId).child(fileName);
 
@@ -265,6 +262,7 @@ public class RealCameraActivity extends AppCompatActivity {
                     Log.w("Firestore", "Error adding document", exception);
                 });
     }
+
     private void saveDocumentIdToCollection(String documentId) {
         // documentIds 컬렉션에 문서 ID 저장
         Map<String, Object> idData = new HashMap<>();

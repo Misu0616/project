@@ -1,4 +1,4 @@
-package com.jica.project;
+package com.jica.project.view.adapter;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -11,6 +11,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.jica.project.model.ActivityModel;
+import com.jica.project.R;
+import com.jica.project.view.activity.camera.CameraActivity;
+
 import java.util.List;
 
 public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHolder> {
@@ -73,7 +78,7 @@ public class ActivityAdapter extends RecyclerView.Adapter<ActivityAdapter.ViewHo
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
-                                    Intent camera = new Intent(itemView.getContext(), RealCameraActivity.class);
+                                    Intent camera = new Intent(itemView.getContext(), CameraActivity.class);
                                     camera.putExtra(ActivityAdapter.ViewHolder.POSITION_KEY, position);
                                     itemView.getContext().startActivity(camera);
                                 }

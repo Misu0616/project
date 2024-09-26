@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#ECE7DB"
-    tools:context=".MainActivity">
+    tools:context=".view.activity.auth.MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"

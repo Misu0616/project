@@ -7,7 +7,7 @@
     android:background="#ECE7DB"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".RealCameraActivity">
+    tools:context=".view.activity.camera.CameraActivity">
 
     <ImageView
         android:id="@+id/imageView4"

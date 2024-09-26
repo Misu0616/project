@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#ECE7DB"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".view.activity.auth.MainActivity">
 
     <ImageView
         android:id="@+id/imageView"

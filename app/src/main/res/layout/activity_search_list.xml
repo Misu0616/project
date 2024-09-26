@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="#ECE7DB"
     android:orientation="vertical"
-    tools:context=".SearchListActivity">
+    tools:context=".view.activity.user.SearchListActivity">
 
     <LinearLayout
         android:layout_width="wrap_content"
